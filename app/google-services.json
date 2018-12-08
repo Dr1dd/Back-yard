@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "17867734620",
+    "firebase_url": "https://nugarinis-jardas.firebaseio.com",
+    "project_id": "nugarinis-jardas",
+    "storage_bucket": "nugarinis-jardas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17867734620:android:259d16db28d34f97",
+        "android_client_info": {
+          "package_name": "com.naujas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "17867734620-2jabiq86qpa5pr9po8u9q8i8b1jh9o4m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7h14Wl4X6gM74J1HCe03vNtWJZZ7NyiQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
