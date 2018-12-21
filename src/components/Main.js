@@ -91,9 +91,7 @@ handleChange(e) {
                           });
 
            db.ref('/users/'+UIDK).once('value', snapshot => {
-console.log(snapshot.val()+'1')
            if(snapshot.val() !=null){
-           console.log(snapshot.val() +'2')
            data = snapshot.val();
 
             this.setState({

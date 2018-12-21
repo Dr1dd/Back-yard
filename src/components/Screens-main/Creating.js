@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { View, Button, Text, Image, TextInput, NestedScrollView, AsyncStorage, ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, ImageBackground, BackHandler, Platform, Alert } from 'react-native';
+import { View, Button, Text, Image, TextInput, NestedScrollView, ToolbarAndroid, AsyncStorage, ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, ImageBackground, BackHandler, Platform, Alert } from 'react-native';
 import { createDrawerNavigator, createStackNavigator, StackNavigator } from 'react-navigation';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import styles from '../styles';
@@ -63,6 +63,9 @@ constructor(props) {
       City: '',
       UID: '',
       uri: '',
+      URL: '',
+      timePassed: false,
+      animating: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
 
@@ -72,26 +75,29 @@ constructor(props) {
 
    componentDidMount() {
     const { currentUser } = firebase.auth()
-         this.setState({ currentUser })
-         AsyncStorage.getItem('user_data').then((user_data_json) => {
-                   let user_data = JSON.parse(user_data_json);
-    AsyncStorage.getItem('UID').then((value) => {
-        UIDK = value
-       this.setState({
-        UID: value,
-           });
-    });
-    this.setState({
-                user: user_data,
-                loaded: true
+                          this.setState({ currentUser })
+                          AsyncStorage.getItem('user_data').then((user_data_json) => {
+                                    let user_data = JSON.parse(user_data_json);
+                     AsyncStorage.getItem('UID').then((value) => {
+                         UIDK = value
+                        this.setState({
+                         UID: value,
+                            });
+                     });
+                     this.setState({
+                                 user: user_data,
+                                 loaded: true
 
-              });
-              });
+                               });
+                               });
+
     }
 
-
+setTimePassed() {
+   this.setState({timePassed: true});
+}
   handleSubmit() {
-    this.setState({ uploadURL: '' })
+    this.setState({ uploadURL: ''})
     if(this.state.Title == '' || this.state.DescriptionStyle == '' || this.state.City == '' || this.state.uri == ''){
         Alert.alert(
         'Warning',
@@ -103,22 +109,38 @@ constructor(props) {
         );
     }
     else {
-    addAdvertItems(this.state.Title, this.state.Description, this.state.City, this.state.UID)
+            this.setState({
+                       animating: true })
     uploadImage(UriResponse)
-                 .then(url => this.setState({ uploadURL: url }))
-                 .catch(error => console.log(error))
-     Alert.alert(
-              'Success',
-               'Your advertisement has been successfully placed',
-                 [
-                   { text: 'Search screen', onPress: () => this.props.navigation.navigate('Search')},
-                   { text: 'Profile screen', onPress: () => this.props.navigation.navigate('Profile')}
-                 ]
+                     .then(url =>{
+                   let imgURL = url
+                   this.setState({
+                    uploadURL: imgURL,
+                   });
+                  addAdvertItems(this.state.Title, this.state.Description, this.state.City, this.state.UID, this.state.uploadURL)
 
-              );
+                     })
+                     setTimeout( ()=> {
+                      this.setState({
+                       animating: false })
+
+                         Alert.alert(
+                  'Success',
+                  'Your advertisement has been successfully placed',
+                          [
+                                        { text: 'Search screen', onPress: () => this.props.navigation.navigate('Search')},
+                                         { text: 'Profile screen', onPress: () => this.props.navigation.navigate('Profile')}
+                          ]
+
+                   );
+
+                       }, 2000)
+
+
+
+    }
     }
 
-    }
 
 
      handleChange1(item) {
@@ -238,11 +260,20 @@ constructor(props) {
                          onClose={() => this.setState({isVisible: false})}/>
 
 
+                {this.state.animating &&
+                  <View>
+                      <ActivityIndicator
+                         color = 'white'
+                         size = "large"
+                              />
+                  </View>
+                          }
                           <TouchableOpacity onPress={this.handleSubmit}>
                                        <Text style = {styles.button}>
                                      Publish
                                       </Text>
                                      </TouchableOpacity>
+
 
             </View>
 
@@ -255,7 +286,7 @@ constructor(props) {
 const Cities = ['Vilnius', 'Kaunas', 'Klaipėda', 'Šiauliai', 'Panevėžys', 'Alytus', 'Marijampolė', 'Mažeikiai', 'Jonava', 'Utena', 'Kėdainiai', 'Telšiai', 'Visaginas', 'Tauragė', 'Ukmergė', 'Plungė', 'Šilutė', 'Kretinga', 'Radviliškis', 'Druskininkai', 'Palanga', 'Rokiškis', 'Biržai', 'Gargždai', 'Kuršėnai', 'Elektrėnai', 'Jurbarkas', 'Garliava', 'Vilkaviškis', 'Molėtai', 'Raseiniai', 'Anykščiai', 'Lentvaris', 'Prienai', 'Joniškis', 'Kupiškis', 'Zarasai', 'Ignalina'];
 
 
-const addAdvertItems = (title, description, city, UID) => {
+const addAdvertItems = (title, description, city, UID, URL) => {
             AsyncStorage.removeItem('AdKey')
 
               newAdPostKey = firebase.database().ref().child('Adverts').push().key;
@@ -266,5 +297,7 @@ const addAdvertItems = (title, description, city, UID) => {
                 Description: description,
                 City: city,
                 UserId: UID,
+                imgUrl: URL,
+                AdKey: newAdPostKey,
                 });
              }

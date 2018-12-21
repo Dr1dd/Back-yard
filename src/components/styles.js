@@ -220,8 +220,114 @@ export default StyleSheet.create({
           backgroundColor: '#415362',
 
             margin: 30,
-        }
+        },
+      listView: {
+            flex: 1,
+          },
+          listItem: {
+            borderBottomColor: '#eee',
+            borderColor: 'gray',
+            flexDirection:'row',
+            alignItems:'center',
+            borderWidth: 1,
+            padding:20
+          },
+          listItemTitle: {
+            flex: 6,
+            color: '#000',
+            fontSize: 16,
+          },
+          listItemAction: {
+            flex: 1,
+            width: 40,
+            height: 40
+          },
+          navbar: {
+            alignItems: 'center',
+            backgroundColor: '#fff',
+            borderBottomColor: '#eee',
+            borderColor: 'transparent',
+            borderWidth: 1,
+            justifyContent: 'center',
+            height: 54,
+            flexDirection: 'row'
+          },
+          navbarTitle: {
+            color: '#444',
+            fontSize: 16,
+            fontWeight: "500"
+          },
+          SearchListing: {
+                     margin: 8,
 
+                     height: 150,
+                     flex: 2,
+                     flexDirection: 'row',
+                     borderRadius: 30,
+                     backgroundColor: '#415362',
 
+          },
+           toolbar: {
+             backgroundColor: '#2196F3',
+             height: 56,
+             textAlign: 'center',
+             alignItems: 'center',
+             flexDirection: 'row',
+           },
+            ListingImageStyle:{
+                        width: 135,
+                        borderRadius: 60,
+                        borderColor: 'black',
+                        height: 135,
+                       marginLeft: 12,
+
+                        marginVertical: 7.5,
+                        resizeMode: 'stretch',
+                    },
+           Hambutton:{
+             backgroundColor: '#5F6A74',
+                flexDirection: 'row',
+                flex: 0.08,
+        },
+         AdvertImageBlock:{
+                width: WIDTH - 55,
+                resizeMode: 'stretch',
+                 height: 400,
+                  flex: 4,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 30,
+                  backgroundColor: '#415362',
+
+                    margin: 30,
+                    marginVertical: 10,
+                },
+          ImageStyle2:{
+                     width: WIDTH - 53,
+                     borderRadius: 30,
+                     height: 405,
+
+                     resizeMode: 'stretch',
+                 },
+         AdvertWhite:{
+                                        paddingLeft: 40,
+                                        fontSize: 21,
+                                        fontWeight: 'bold',
+                                        color: 'white',
+
+         },
+           AdDescriptionStyle: {
+                                    justifyContent: 'flex-start',
+                                    textAlignVertical: 'top',
+                                    alignItems: 'flex-start',
+                                    width: WIDTH - 55,
+                                    borderRadius: 30,
+                                    fontSize: 20,
+                                    paddingLeft: 30,
+                                    backgroundColor: '#415362',
+                                    color: 'white',
+                                    marginHorizontal: 25,
+                                    margin: 15,
+                 },
 });
 

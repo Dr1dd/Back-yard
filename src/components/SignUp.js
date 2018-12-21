@@ -166,6 +166,7 @@ render() {
   }
 }
 let newPostKey
+
 const addItems1 =  (item) => {
             AsyncStorage.removeItem('UID')
             let postData = {
