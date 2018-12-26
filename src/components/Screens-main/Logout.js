@@ -1,11 +1,21 @@
 import React from 'react';
-import { View, Button, Text, StyleSheet, ActivityIndicator, TouchableOpacity, ImageBackground, BackHandler } from 'react-native';
+import { View, Button, Text, StyleSheet, ActivityIndicator, AsyncStorage, TouchableOpacity, ImageBackground, BackHandler } from 'react-native';
 import { createDrawerNavigator, createStackNavigator, StackNavigator } from 'react-navigation';
 import firebase from 'react-native-firebase';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Main from '../Main';
 
 
 export default class Logout extends React.Component {
+constructor(props) {
+                  super(props);
+                  this.state = {
+                   fname: '',
+                   lname: '',
+                   phone: '',
+
+                  }
+                }
   static navigationOptions = {
     drawerLabel: 'Logout',
     header: null,
@@ -21,8 +31,8 @@ export default class Logout extends React.Component {
                    .then(() => this.props.navigation.navigate('Logges'))
                    .catch(error => this.setState({ errorMessage: error.message }))
     }
-
   render() {
+
      return (
        <View style={styles.container}>
          <Text style = {{fontSize: 24}}>Logging out</Text>

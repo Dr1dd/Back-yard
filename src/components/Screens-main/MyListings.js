@@ -32,7 +32,7 @@ import { responsiveHeight, responsiveWidth, responsiveFontSize } from 'react-nat
 
 
 let navigation
-
+let numberOfAds = 0
 const WORow = ({name, city, url, navigation, UID}) => (
         <View style={styles.SearchListing}>
         <View style={{flexDirection: 'row', justifyContent: 'center', flex: 1.5}}>
@@ -60,14 +60,14 @@ const WORow = ({name, city, url, navigation, UID}) => (
 );
 
 let UIDK
-export default class Searching extends Component {
+export default class MyListings extends Component {
 
 
 static navigationOptions = {
-       drawerLabel: 'Search',
+       drawerLabel: 'My Listings',
        header: null,
         drawerIcon: () => (
-                    <MaterialIcons name={'search'} size={25} />
+                    <MaterialIcons name={'list'} size={25} />
                     )
      };
 
@@ -79,7 +79,6 @@ static navigationOptions = {
                  }),
                  loading: true,
                  AdKey: '',
-                 animating: false,
              }
              this.SendData = this.SendData.bind(this);
          }
@@ -107,50 +106,55 @@ static navigationOptions = {
                        loaded: true
 
                      });
+                                numberOfAds = 0
+                                var dbref = db.ref('Adverts/').orderByChild("UserId").equalTo(UIDK);
 
-                       var dbref = db.ref('Adverts/');
-                                 this.setState ( {dbulref: dbref});
-                                         dbref.on('value', (e) => {
+                                   this.setState ( {dbulref: dbref});
+                                           dbref.on('value', (e) => {
+                                               var rows = [];
+                                               e.forEach((child) => {
+                                               numberOfAds +=1
+                                               rows.push({
+                                                  title: child.val().Title,
+                                                  city: child.val().City,
+                                                  url: child.val().imgUrl,
+                                                  AdKey: child.val().AdKey,
+                                               })
 
-                                             var rows = [];
-                                             e.forEach((child) => {
-                                             rows.push({
-                                                title: child.val().Title,
-                                                city: child.val().City,
-                                                url: child.val().imgUrl,
-                                                AdKey: child.val().AdKey,
-                                             })
+                                               rows = rows.reverse()
+                                               });
+                                               var ds = this.state.dataSource.cloneWithRows(rows);
+                                               this.setState({
+                                                   dataSource: ds,
+                                                   loading: false
+                                               });
+                                           });
 
-                                             rows = rows.reverse()
-                                             });
-                                             var ds = this.state.dataSource.cloneWithRows(rows);
-                                             this.setState({
-                                                 dataSource: ds,
-                                                 loading: false
-                                             });
+
                                          });
 
-                     });
 
       }
       SendData = (AdKey) =>{
       let key = AdKey
       return(
-        this.props.navigation.navigate('AdvertScreen'),
+        this.props.navigation.navigate('MyAds'),
         this.DataSend(key)
       )
       }
      DataSend(AdKey){
         AsyncStorage.setItem('AdKey', AdKey)
      }
+onBack = () => {
+       return this.props.navigation.navigate('Profile')
 
 
+     };
 
        componentDidUnMount() {
               this.state.dbulref.off('value');
           }
           renderRow (rd) {
-
               return <WORow name={rd.title} city={rd.city} url={rd.url} navigation={() => this.SendData(rd.AdKey)} UID = {rd.AdKey}/>;
           }
 
@@ -168,11 +172,11 @@ static navigationOptions = {
               }
               return (
                       <View style={styles.Main}>
-                         <View style={styles.Hambutton}>
+                         <View style={styles.Hambutton1}>
                                         <HeaderComponent {...this.props} />
                                  <View style={styles.HeaderName}>
                                             <Text style={styles.HeaderText}>
-                                                Listings
+                                               My Listings
                                             </Text>
                                             </View>
                                             </View>
@@ -182,9 +186,33 @@ static navigationOptions = {
                                               borderBottomWidth: 6,
                                                     }}
                                                  />
+
                       <ListView dataSource={this.state.dataSource} style={styles.Main}
                   renderRow={(rowData) => this.renderRow(rowData)}
                       />
+                                <View
+                                            style={{
+                                             borderBottomColor: '#28343E',
+                                              borderBottomWidth: 3,
+                                                    }}
+                                                 />
+                       <View style={{ height: 5, alignItems: 'center', flexDirection:'column'}}>
+
+                             <Text style={{
+                                alignItems: 'center',
+                                color:'white'
+                             }}>
+
+                                Total listings: {numberOfAds}/7
+                                 </Text>
+                                    </View>
+                          <HandleBack onBack={this.onBack}>
+                                                <View>
+                                                       <TouchableOpacity onPress={() => this.setState( {editing: true})}>
+                                                            <Text>  </Text>
+                                                          </TouchableOpacity>
+                                                        </View>
+                                                      </HandleBack>
 
                       </View>
               );

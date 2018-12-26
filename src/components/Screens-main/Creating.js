@@ -10,17 +10,22 @@ import firebase from 'react-native-firebase';
 import RNFetchBlob from 'rn-fetch-blob';
 import ImagePicker from 'react-native-image-picker';
 
-let UIDK
 
+let UIDK
+let sessionId
 const Blob = RNFetchBlob.polyfill.Blob;
 const fs = RNFetchBlob.fs;
 window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
 window.Blob = Blob;
 let UriResponse
+const maxLength = 200;
+let adUIDK
+let otherArgs = 1
+let numberOfAds = 0
 const uploadImage = (uri, mime = 'application/octet-stream') => {
    return new Promise((resolve, reject) => {
      const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
-     const sessionId = new Date().getTime()
+     sessionId = new Date().getTime()
      let uploadBlob = null
      const imageRef = stor.ref('images/' +sessionId)
 
@@ -66,9 +71,14 @@ constructor(props) {
       URL: '',
       timePassed: false,
       animating: false,
+      itemLength: 0,
+      itemLength1: 0,
+      Load: false,
+      uploadURL: '',
+      checking: true,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
-
+    this.Recursion = this.Recursion.bind(this);
   }
   state = { currentUser: null }
 
@@ -76,27 +86,51 @@ constructor(props) {
    componentDidMount() {
     const { currentUser } = firebase.auth()
                           this.setState({ currentUser })
+                AsyncStorage.getItem('UID').then((value) => {
+                                        UIDK = value
+                                       this.setState({
+                                        UID: value,
+                                           });
+                                    });
                           AsyncStorage.getItem('user_data').then((user_data_json) => {
                                     let user_data = JSON.parse(user_data_json);
-                     AsyncStorage.getItem('UID').then((value) => {
-                         UIDK = value
-                        this.setState({
-                         UID: value,
-                            });
-                     });
+
                      this.setState({
                                  user: user_data,
                                  loaded: true
 
                                });
-                               });
+                            numberOfAds = 0
+                     var dbref = db.ref('Adverts/').orderByChild("UserId").equalTo(UIDK);
+                                          this.setState ( {dbulref: dbref});
+                                             dbref.once('value', (e) => {
+                                                 e.forEach((child) => {
+                                                 numberOfAds +=1
+                                                 if(numberOfAds >= 7){
+                                                  Alert.alert(
+                                                                       'You have exceeded your maximum number of listing',
+                                                               'Please remove some of the listings before proceeding',
+                                                                       [
+                                                                      { text: 'My Listings', onPress: () => this.props.navigation.navigate('MyListings')},
+                                                                        { text: 'Profile screen', onPress: () => this.props.navigation.navigate('Profile')}
+                                                                       ],
+                                                                       { cancelable: false}
+                                                                  );
+                                                               }
+                                                 });
+                                                 });
+                      });
+
 
     }
-
+ componentDidUnMount() {
+              this.state.dbulref.off('value');
+          }
 setTimePassed() {
    this.setState({timePassed: true});
 }
   handleSubmit() {
+   let time = 10
     this.setState({ uploadURL: ''})
     if(this.state.Title == '' || this.state.DescriptionStyle == '' || this.state.City == '' || this.state.uri == ''){
         Alert.alert(
@@ -111,35 +145,40 @@ setTimePassed() {
     else {
             this.setState({
                        animating: true })
-    uploadImage(UriResponse)
-                     .then(url =>{
-                   let imgURL = url
-                   this.setState({
-                    uploadURL: imgURL,
-                   });
-                  addAdvertItems(this.state.Title, this.state.Description, this.state.City, this.state.UID, this.state.uploadURL)
 
-                     })
-                     setTimeout( ()=> {
+                       uploadImage(UriResponse)
+                                          .then(url =>{
+                                           let imgURL = url
+                                            this.setState({
+                                            uploadURL: imgURL,
+                                          })
+                                          })
+        this.Recursion(time, 3000, this.state.uploadURL);
+    }
+    }
+     Recursion(time, ms, upload){
+          if(upload === '' || upload === undefined){
+                        setTimeout(()=>{
+                            this.Recursion(time-1, 3000, this.state.uploadURL);
+                        }, ms)
+
+                    }
+                    else {
+                 addAdvertItems(this.state.Title, this.state.Description, this.state.City, this.state.UID, this.state.uploadURL, sessionId)
                       this.setState({
-                       animating: false })
+                        animating: false,
+                          })
+                            Alert.alert(
+                                     'Success',
+                                     'Your advertisement has been successfully placed',
+                            [
+                                   { text: 'Search screen', onPress: () => this.props.navigation.navigate('Search')},
+                                   { text: 'Profile screen', onPress: () => this.props.navigation.navigate('Profile')}
+                            ]
+                            )
+                    }
 
-                         Alert.alert(
-                  'Success',
-                  'Your advertisement has been successfully placed',
-                          [
-                                        { text: 'Search screen', onPress: () => this.props.navigation.navigate('Search')},
-                                         { text: 'Profile screen', onPress: () => this.props.navigation.navigate('Profile')}
-                          ]
-
-                   );
-
-                       }, 2000)
-
-
-
-    }
-    }
+          }
 
 
 
@@ -148,7 +187,10 @@ setTimePassed() {
 
             }
        handleChange2(item){
-       this.setState({Description: item});
+       this.setState({
+       itemLength: maxLength-(maxLength-item.length),
+       Description: item,
+       });
        }
 
  _pickImage() {
@@ -163,25 +205,28 @@ setTimePassed() {
     }
 
 
-
   render() {
+
   const { currentUser } = this.state;
+
     return (
-    <ScrollView style={styles.Main}>
-         <View style={styles.Hamburger}>
+    <View style={styles.Main}>
+         <View style={styles.Hamburger1}>
                 <HeaderComponent {...this.props} />
          <View style={styles.HeaderName}>
                     <Text style={styles.HeaderText}>
                         Create
                     </Text>
-                    </View>
-                    </View>
+         </View>
+         </View>
                     <View
                     style={{
+
                      borderBottomColor: '#28343E',
                       borderBottomWidth: 6,
                             }}
                          />
+            <ScrollView style={styles.Main}>
                 <View style={ styles.ImageBlock }>
                        {
                      (() => {
@@ -224,6 +269,8 @@ setTimePassed() {
                       style={styles.TitleInputStyle}
                       onChangeText={this.handleChange1.bind(this)}
                       placeholderTextColor={'#778190'}
+                      maxLength= {65}
+                      maxHeight= {50}
 
                     />
 
@@ -231,6 +278,14 @@ setTimePassed() {
                     <Text style={styles.TitleStyle}>
                                         Description:
                                         </Text>
+                                <Text style={{
+                                                  fontSize:15,
+                                                  paddingRight: 55,
+                                                  color:'lightgrey',
+                                                  textAlign: 'right'
+                                              }}>
+                                                  {this.state.itemLength}/200
+                                              </Text>
 
                          <TextInput
                            placeholder='Place your description here...'
@@ -238,7 +293,15 @@ setTimePassed() {
                            style={styles.DescriptionStyle}
                            onChangeText={this.handleChange2.bind(this)}
                            placeholderTextColor={'#778190'}
-                           multiline={true}
+                           editable = {true}
+                           multiline
+                           minHeight = {150}
+                           maxLength = {200}
+                           maxHeight = {200}
+                           numberOfLines={10}
+                           blurOnSubmit={true}
+
+
 
                                   />
                     <Text style={styles.TitleStyle}>
@@ -276,8 +339,8 @@ setTimePassed() {
 
 
             </View>
-
-    </ScrollView>
+            </ScrollView>
+    </View>
 
     );
   }
@@ -286,7 +349,7 @@ setTimePassed() {
 const Cities = ['Vilnius', 'Kaunas', 'Klaipėda', 'Šiauliai', 'Panevėžys', 'Alytus', 'Marijampolė', 'Mažeikiai', 'Jonava', 'Utena', 'Kėdainiai', 'Telšiai', 'Visaginas', 'Tauragė', 'Ukmergė', 'Plungė', 'Šilutė', 'Kretinga', 'Radviliškis', 'Druskininkai', 'Palanga', 'Rokiškis', 'Biržai', 'Gargždai', 'Kuršėnai', 'Elektrėnai', 'Jurbarkas', 'Garliava', 'Vilkaviškis', 'Molėtai', 'Raseiniai', 'Anykščiai', 'Lentvaris', 'Prienai', 'Joniškis', 'Kupiškis', 'Zarasai', 'Ignalina'];
 
 
-const addAdvertItems = (title, description, city, UID, URL) => {
+const addAdvertItems = (title, description, city, UID, URL, PicName) => {
             AsyncStorage.removeItem('AdKey')
 
               newAdPostKey = firebase.database().ref().child('Adverts').push().key;
@@ -299,5 +362,6 @@ const addAdvertItems = (title, description, city, UID, URL) => {
                 UserId: UID,
                 imgUrl: URL,
                 AdKey: newAdPostKey,
+                PicId: PicName,
                 });
              }

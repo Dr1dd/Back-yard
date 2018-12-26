@@ -10,13 +10,14 @@ import firebase from 'react-native-firebase';
 import RNFetchBlob from 'rn-fetch-blob';
 import ImagePicker from 'react-native-image-picker';
 import HandleBack from '../HandleBack';
-import Searching from './SearchScreen';
+import MyListings from './MyListings';
 import { responsiveHeight, responsiveWidth, responsiveFontSize } from 'react-native-responsive-dimensions';
 
 let adUIDK
 
 let UIDK
-export default class AdvertScreen extends React.Component {
+let picID
+export default class MyAds extends React.Component {
 static navigationOptions = {
       header: null,
 drawerLabel: () => null
@@ -32,14 +33,15 @@ constructor(props) {
        User: '',
        Description: '',
        ADUIDK: '',
-
+       picId: '',
+       animating: false,
     };
 
   }
   state = { currentUser: null }
 
 onBack = () => {
-       return this.props.navigation.navigate('Search')
+       return this.props.navigation.navigate('MyListings')
 
 
      };
@@ -73,13 +75,17 @@ onBack = () => {
                                         Title: data.Title,
                                         Description: data.Description,
                                         URL: data.imgUrl,
+                                        picId: data.PicId,
 
                                     })
-
+                                    picID = JSON.stringify(data.PicId)
+                                     console.log(picID)
 
                                    })
+                                 console.log(UIDK)
            db.ref('/users/'+UIDK).once('value', snapshot => {
                                             data = snapshot.val();
+                                            console.log(UIDK)
                                               this.setState({
                                                   Phone: data.phone,
                                                   Name: data.fname,
@@ -94,7 +100,21 @@ onBack = () => {
 
     }
 
-
+   Del = () =>{
+     this.setState({
+                          animating: true })
+    AsyncStorage.getItem('AdKey').then((value) => {
+              adUIDK = value
+            })
+    stor.ref('images').child(picID).delete();
+    db.ref('Adverts').child(adUIDK).remove();
+   AsyncStorage.removeItem('AdKey')
+   setTimeout( ()=> {
+   this.setState({
+                             animating: false })
+      this.props.navigation.navigate('MyListings')
+   },3000)
+   }
   render() {
   const { currentUser } = this.state;
     return (
@@ -109,7 +129,7 @@ onBack = () => {
 
               <View style={{flex: 2, flexDirection: 'column'}}>
                             <Text style={{
-                                              fontSize: 27,
+                                              fontSize: responsiveFontSize(3.5),
                                               paddingLeft: 10,
                                               fontWeight: 'bold',
                                               color: '#28343E',
@@ -124,7 +144,7 @@ onBack = () => {
                          </View>
                <View style={{flex: 2, flexDirection: 'column'}}>
                <Text style={{
-               fontSize: 27,
+               fontSize: responsiveFontSize(3.5),
                   paddingLeft: 10,
                   paddingTop: 20,
                   fontWeight: 'bold',
@@ -144,7 +164,7 @@ onBack = () => {
            </View>
            <View style={{flex: 2, flexDirection: 'column'}}>
                           <Text style={{
-                          fontSize: 27,
+                          fontSize: responsiveFontSize(3.5),
                              paddingLeft: 10,
                              paddingTop: 20,
                              fontWeight: 'bold',
@@ -166,7 +186,7 @@ onBack = () => {
            </View>
            <View style={{flex: 2, flexDirection: 'row'}}>
            <Text style={{
-                                          fontSize: 27,
+                                          fontSize: responsiveFontSize(3.5),
                                              paddingLeft: 10,
                                              paddingTop: 10,
                                              fontWeight: 'bold',
@@ -178,7 +198,7 @@ onBack = () => {
               </Text>
               <Text style={{
               paddingLeft: 10,
-              fontSize: 17,
+              fontSize: responsiveFontSize(2),
               paddingTop: 20,
               fontWeight: 'bold',
               color: 'white',
@@ -188,10 +208,9 @@ onBack = () => {
            </View>
            <View style={{flex: 2, flexDirection: 'row'}}>
                       <Text style={{
-                              fontSize: 22,
+                              fontSize: responsiveFontSize(3),
                              paddingLeft: 10,
-                            paddingTop: 13,
-                            paddingBottom: 20,
+                            paddingTop: 10,
                           fontWeight: 'bold',
                           color: '#28343E',
                           justifyContent: 'center',
@@ -213,7 +232,7 @@ onBack = () => {
                                                     <Text style={{
                                                                             paddingLeft: 10,
                                                                             fontSize: responsiveFontSize(2),
-                                                                            paddingTop: 20,
+                                                                            paddingTop: 17,
                                                                             fontWeight: 'bold',
                                                                             color: 'white',
                                                                             }}>
@@ -226,9 +245,21 @@ onBack = () => {
 
 
                       </View>
-            <View style={{flex: 2, flexDirection: 'row', height: 50}}>
-
-            </View>
+                    <View style={{flex: 2, flexDirection: 'column'}}>
+                    {this.state.animating &&
+                                      <View>
+                                          <ActivityIndicator
+                                             color = 'white'
+                                             size = "large"
+                                                  />
+                                       </View>
+                                                  }
+                        <TouchableOpacity  onPress={() => this.Del()}>
+                                     <Text style = {styles.button}>
+                                   Delete
+                                    </Text>
+                                   </TouchableOpacity>
+                    </View>
         </ScrollView>
 
     );

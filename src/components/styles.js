@@ -1,6 +1,24 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform, PixelRatio } from 'react-native';
+import { responsiveHeight, responsiveWidth, responsiveFontSize } from 'react-native-responsive-dimensions';
 
+
+
+const {
+  height: SCREEN_HEIGHT,
+} = Dimensions.get('window');
 const { width: WIDTH } = Dimensions.get('window')
+const scale = WIDTH / 320;
+
+export function normalize(size) {
+  const newSize = size * scale
+  if (Platform.OS === 'ios') {
+    return Math.round(PixelRatio.roundToNearestPixel(newSize))
+  } else {
+    return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2
+  }
+}
+
+
 let iconSize = 24;
 export default StyleSheet.create({
 
@@ -21,42 +39,54 @@ export default StyleSheet.create({
 
   },
   HeaderName:{
-             flex: 4,
-             marginLeft: 110,
+             flex: 13,
+
+             overflow: 'visible',
+
+
 
   },
+  HeaderName1:{
+               flex: 1,
+              alignSelf: 'center',
+              alignItems: 'center',
+               justifyContent: 'center',
+
+
+    },
   HeaderText:{
-             flex: 4,
-             alignItems: 'center',
-             fontSize: 35,
+             flex: 5,
+             fontSize: responsiveFontSize(5.5),
              fontWeight: 'bold',
              color: 'white',
+             justifyContent: 'center',
+             overflow: 'visible',
+              textAlign:'center',
+              alignSelf: 'center',
 
   },
   button: {
               width: WIDTH -55,
               height: 50,
-              padding: 5,
+
               borderColor: 'black',
               textAlign: 'center',
               fontWeight: 'bold',
               color: 'white',
-              borderRadius: 25,
-              fontSize: 30,
-              margin: 20,
+              borderRadius: 30,
+              fontSize: responsiveFontSize(4.5),
+              marginHorizontal: 25,
+              margin: 15,
               backgroundColor: '#28343E',
               alignItems: 'center',
-              justifyContent: 'center',
-              shadowOffset: { width: 0, height: 3 },
-              shadowRadius: 5,
-              shadowColor: 'black',
-              shadowOpacity: 1.0,
+              justifyContent: 'center'
+
       },
   inputStyle: {
               width: WIDTH - 55,
               height: 50,
               borderRadius: 30,
-              fontSize: 25,
+              fontSize: responsiveFontSize(3),
               paddingLeft: 30,
               backgroundColor: '#415362',
               color: 'white',
@@ -69,14 +99,14 @@ export default StyleSheet.create({
   },
   signupText: {
               color: 'white',
-              fontSize: 20
+              fontSize: responsiveFontSize(2)
   },
   signupTextContr: {
               flexDirection: 'row',
-              fontSize: 20
+              fontSize: responsiveFontSize(2)
   },
   signupTextgray: {
-                fontSize: 20
+                fontSize: responsiveFontSize(2)
     },
   error:{
         color: 'red',
@@ -85,7 +115,7 @@ export default StyleSheet.create({
 
   },
     errorMessage: {
-      fontSize: 20,
+      fontSize: responsiveFontSize(2),
       color:"red",
       marginLeft:-80,
     },
@@ -94,11 +124,21 @@ export default StyleSheet.create({
         height: 24,
       },
     Hamburger: {
-    flex: 0.8,
+    height: SCREEN_HEIGHT/11,
     backgroundColor: '#5F6A74',
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 0,
     margin: 0,
+    },
+    Hamburger1:{
+    height: SCREEN_HEIGHT/11,
+     backgroundColor: '#5F6A74',
+        flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+        margin: 0,
     },
     Main: {
         flex: 1,
@@ -116,10 +156,11 @@ export default StyleSheet.create({
 
     FLNameStyle: {
                   width: WIDTH - 55,
-                  height: 50,
+                  height: 75,
                   borderRadius: 0,
-                  fontSize: 25,
+                  fontSize: responsiveFontSize(3.5),
                   paddingLeft: 10,
+                  paddingRight: 5,
                   fontWeight: 'bold',
                   color: '#28343E',
                   marginHorizontal: 10,
@@ -131,14 +172,14 @@ export default StyleSheet.create({
       },
         FLNameStyleWhite: {
                         width: WIDTH - 55,
-                        height: 50,
+                        height: 70,
                         borderRadius: 0,
-                        fontSize: 17,
+                        fontSize: responsiveFontSize(2.5),
                         paddingLeft: 25,
                         fontWeight: 'bold',
                         color: 'white',
                         marginHorizontal: 10,
-                        margin: 10,
+                        margin: 0,
                         paddingBottom: 0,
 
                         overflow: 'visible',
@@ -147,7 +188,7 @@ export default StyleSheet.create({
             },
      TStyle: {
           color: 'white',
-          fontSize: 24,
+          fontSize: responsiveFontSize(2),
           paddingLeft: 40,
           marginHorizontal: 10,
           margin: 0,
@@ -158,8 +199,9 @@ export default StyleSheet.create({
                    width: WIDTH - 55,
                    height: 50,
                    borderRadius: 30,
-                   fontSize: 20,
+                   fontSize: responsiveFontSize(3),
                    paddingLeft: 30,
+                   paddingRight: 7,
                    backgroundColor: '#415362',
                    color: 'white',
                    marginHorizontal: 25,
@@ -168,9 +210,9 @@ export default StyleSheet.create({
        },
         TitleStyle: {
                          width: WIDTH - 55,
-                         height: 30,
+                         height: 35,
                          borderRadius: 0,
-                         fontSize: 25,
+                         fontSize: responsiveFontSize(3.5),
                          paddingLeft: 10,
                          fontWeight: 'bold',
                          color: '#28343E',
@@ -183,14 +225,16 @@ export default StyleSheet.create({
                            textAlignVertical: 'top',
                            alignItems: 'flex-start',
                            width: WIDTH - 55,
-                           height: 200,
                            borderRadius: 30,
-                           fontSize: 20,
-                           paddingLeft: 30,
+                           flex: 1,
+                           fontSize: responsiveFontSize(3),
+                           paddingLeft: 20,
+                           paddingTop: 1,
+                           paddingRight: 8,
                            backgroundColor: '#415362',
                            color: 'white',
                            marginHorizontal: 25,
-                           margin: 15,
+                           margin: 5,
         },
         WhiteText:{
             color: 'white',
@@ -198,7 +242,7 @@ export default StyleSheet.create({
             justifyContent: 'center',
              height: 40,
               borderRadius: 0,
-              fontSize: 25,
+              fontSize: normalize(25),
             paddingTop: 5,
             paddingLeft: 10,
 
@@ -235,7 +279,7 @@ export default StyleSheet.create({
           listItemTitle: {
             flex: 6,
             color: '#000',
-            fontSize: 16,
+            fontSize: normalize(16),
           },
           listItemAction: {
             flex: 1,
@@ -254,7 +298,7 @@ export default StyleSheet.create({
           },
           navbarTitle: {
             color: '#444',
-            fontSize: 16,
+            fontSize: normalize(16),
             fontWeight: "500"
           },
           SearchListing: {
@@ -275,20 +319,28 @@ export default StyleSheet.create({
              flexDirection: 'row',
            },
             ListingImageStyle:{
-                        width: 135,
-                        borderRadius: 60,
+                        width: WIDTH/2.5,
+                        borderRadius: 30,
                         borderColor: 'black',
                         height: 135,
-                       marginLeft: 12,
+                       marginLeft: 10,
 
                         marginVertical: 7.5,
-                        resizeMode: 'stretch',
                     },
            Hambutton:{
              backgroundColor: '#5F6A74',
                 flexDirection: 'row',
-                flex: 0.08,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                height: SCREEN_HEIGHT/11,
         },
+         Hambutton1:{
+                     backgroundColor: '#5F6A74',
+                        flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        height: SCREEN_HEIGHT/11,
+                },
          AdvertImageBlock:{
                 width: WIDTH - 55,
                 resizeMode: 'stretch',
@@ -311,7 +363,8 @@ export default StyleSheet.create({
                  },
          AdvertWhite:{
                                         paddingLeft: 40,
-                                        fontSize: 21,
+                                        paddingRight: 30,
+                                        fontSize: normalize(21),
                                         fontWeight: 'bold',
                                         color: 'white',
 
@@ -322,12 +375,30 @@ export default StyleSheet.create({
                                     alignItems: 'flex-start',
                                     width: WIDTH - 55,
                                     borderRadius: 30,
-                                    fontSize: 20,
-                                    paddingLeft: 30,
+                                    fontSize: normalize(20),
+                                    paddingLeft: 20,
+                                    paddingTop: 5,
+                                    paddingRight: 8,
+                                    paddingBottom: 5,
                                     backgroundColor: '#415362',
                                     color: 'white',
                                     marginHorizontal: 25,
                                     margin: 15,
                  },
+                 MainOnCreate: {
+                        flex: 7,
+                         flexGrow: 1,
+                          backgroundColor: '#5F6A74'
+                 },
+               ListText: {
+                fontSize: responsiveFontSize(2.5),
+                           fontWeight: '500',
+                           textAlign: 'left',
+                           color: 'black',
+                           flex: 7,
+                           margin: 7,
+                           paddingLeft: WIDTH-(WIDTH-7),
+               }
+
 });
 

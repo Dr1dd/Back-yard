@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, Platform, TextInput, KeyboardAvoidingView, Image, Text, View, AsyncStorage, TouchableOpacity, Button, BackHandler, Alert } from 'react-native';
+import { Animated, ActivityIndicator, Easing, StyleSheet, ScrollView, Platform, TextInput, KeyboardAvoidingView, Image, Text, View, AsyncStorage, TouchableOpacity, Button, BackHandler, Alert } from 'react-native';
 import Logges from './Logges';
 import styles from './styles';
 import firebase from 'react-native-firebase';
@@ -18,12 +18,15 @@ import { addItem} from '../Services/ItemService';
 import { db } from '../Services/db';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { UIDKey } from './Loading'
+import { UIDKey } from './Loading';
+import {UID} from './SignUp';
+
 
 let UIDK
-let previousUID
 let news
 let data
+const NON_DIGIT = '/[^\d]/g'
+
 export default class Main extends React.Component {
   constructor(props) {
                   super(props);
@@ -33,9 +36,12 @@ export default class Main extends React.Component {
                    phone: '',
                    editing: true,
                    stateEdit: false,
+                   animating: false,
                   }
                   this.handleChange = this.handleChange.bind(this);
                   this.handleSubmit = this.handleSubmit.bind(this);
+                             AsyncStorage.getItem('UID').then((value) => (UIDK = value))
+
 
                 }
 
@@ -69,60 +75,29 @@ handleChange(e) {
           });
 
         }
-   handleChange2(item){
-
-   this.setState({
-                   phone: item
-                 });
+   handleChange2(text){
+    this.setState({phone: text.replace(/[^0-9]/g, ''),})
    }
 
-  componentDidMount() {
-      const { currentUser } = firebase.auth()
-      this.setState({ currentUser })
-           previousUID = UIDK
-          AsyncStorage.getItem('UID').then((value) => (UIDK = value))
-
-        AsyncStorage.getItem('user_data').then((user_data_json) => {
-          let user_data = JSON.parse(user_data_json);
-
-          this.setState({
-                           user: user_data,
-                           loaded: true
-                          });
-
-           db.ref('/users/'+UIDK).once('value', snapshot => {
-           if(snapshot.val() !=null){
-           data = snapshot.val();
-
-            this.setState({
-                         fname: data.fname,
-                         phone: data.phone,
-                         lname: data.lname,
-                         });
-           }
-              else{
-                this.setState({
-                fname: 'First name',
-                lname: 'Last name',
-                phone: 'Phone number',
-                })
-               }
-            })
 
 
-
-        });
-
-  }
 
   retrieveData(){
    AsyncStorage.getItem('UID').then((value) => (UIDK = value))
   }
 
    handleSubmit() {
+   this.setState({
+    animating: true,
+   })
     AsyncStorage.getItem('UID').then((value) => (UIDK = value))
     addItems(this.state.fname, this.state.lname, this.state.phone, UIDK)
-    }
+         setTimeout(() => {
+              this.setState({
+              animating: false,
+              })
+            }, 1500);
+        }
 
 
 
@@ -144,13 +119,50 @@ handleChange(e) {
 
                 return false;
 
-              };
+}
+componentDidMount() {
+      const { currentUser } = firebase.auth()
+
+      this.setState({ currentUser })
 
 
+        AsyncStorage.getItem('user_data').then((user_data_json) => {
+          let user_data = JSON.parse(user_data_json);
+                db.ref('/users/'+UIDK).once('value', snapshot => {
+                                       if(snapshot.val() !=null){
+                                       data = snapshot.val();
+
+                                        this.setState({
+                                                     fname: data.fname,
+                                                     phone: data.phone,
+                                                     lname: data.lname,
+                                                     });
+                                       }
+                                          else{
+                                            this.setState({
+                                            fname: 'First name',
+                                            lname: 'Last name',
+                                            phone: 'Phone number',
+                                            })
+                                           }
+                                        })
+          this.setState({
+                           user: user_data,
+                           loaded: true
+                          });
+
+
+
+
+
+        });
+  }
 
 
 render() {
     const { currentUser } = this.state;
+    const { navigation } = this.props;
+    const UIDK = navigation.getParam('UID');
 
 return (
 
@@ -162,6 +174,7 @@ return (
     >
 
  <View style={styles.Main}>
+
  <View style={styles.Hamburger}>
         <HeaderComponent {...this.props} />
  <View style={styles.HeaderName}>
@@ -197,6 +210,7 @@ return (
           placeholderTextColor={'white'}
           onChange={this.handleChange}
           onChangeText={this.retrieveData}
+          maxLength={21}
         />
                          <View
                             style={{
@@ -223,6 +237,7 @@ return (
           style={styles.TStyle}
           placeholderTextColor={'white'}
           onChangeText={this.handleChange1.bind(this)}
+          maxLength={21}
                 />
                    <View
                                  style={{
@@ -245,10 +260,11 @@ return (
             <TextInput
 
                       autoCapitalize="none"
-                      keyboardType = 'numeric'
+                     keyboardType='phone-pad'
                       style={styles.TStyle}
                       placeholderTextColor={'white'}
                       onChangeText={this.handleChange2.bind(this)}
+                      maxLength={10}
 
                             />
                          <View
@@ -266,8 +282,14 @@ return (
             Save
              </Text>
             </TouchableOpacity>
-
-
+             {this.state.animating &&
+                              <View>
+                                  <ActivityIndicator
+                                     color = '#4B4154'
+                                     size = "small"
+                                          />
+                              </View>
+                                      }
              <HandleBack onBack={this.onBack}>
                       <View>
                       <TouchableOpacity onPress={() => this.setState( {editing: true})}>

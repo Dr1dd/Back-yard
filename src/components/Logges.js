@@ -4,10 +4,10 @@ import { createStackNavigator, StackNavigator } from 'react-navigation';
 import firebase from 'react-native-firebase';
 import Main from './Main';
 import styles from './styles';
-
+import HandleBack from './HandleBack';
 
 export default class Logges extends React.Component {
-  state = { email: '', password: '', errorMessage: null, ErrorStatus: true};
+  state = { email: '', password: '', errorMessage: null, ErrorStatus: true, editing: true,};
 
     static navigationOptions = {
             header: null,
@@ -59,6 +59,15 @@ handleLogin = () => {
                          this.handleLogin();
                          }
               }
+              onBack = () => {
+                          if (this.state.editing) {
+                       {()=>this.props.navigation.navigate('SignUp')}
+                       return true;
+                     }
+
+                     return false;
+
+                   };
   render() {
     return (
       <View style={styles.LoginAndSignup}>
@@ -74,6 +83,7 @@ handleLogin = () => {
           keyboardType = "email-address"
           onChangeText={this.OnChangeTextFunction.bind(this)}
           value={this.state.email}
+          maxLength = {35}
         />
         <TextInput
           secureTextEntry
@@ -83,6 +93,7 @@ handleLogin = () => {
           placeholderTextColor={'white'}
           onChangeText={this.OnChangeTextFunPassword.bind(this)}
           value={this.state.password}
+          maxLength = {25}
         />
 
                { this.state.ErrorStatus == false ? (
@@ -104,6 +115,13 @@ handleLogin = () => {
                    onPress={() => this.props.navigation.navigate('SignUp')}>
                    Sign Up </Text>
                    </View>
+                   <HandleBack onBack={this.onBack}>
+                                     <View>
+                                            <TouchableOpacity onPress={() => this.setState( {editing: true})}>
+                                                 <Text>  </Text>
+                                               </TouchableOpacity>
+                                             </View>
+                                           </HandleBack>
       </View>
     );
   }

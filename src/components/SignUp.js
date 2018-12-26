@@ -5,7 +5,6 @@ import styles from './styles';
 import Logges from './Logges';
 import firebase from 'react-native-firebase';
 import HandleBack from './HandleBack';
-import Main from './Main';
 
 
 import { db } from '../Services/db';
@@ -16,13 +15,19 @@ constructor(props) {
       super(props);
       this.state = {
         mail: '',
-        editing: true
+        fname: 'First name',
+        lname: 'Last name',
+        phone: 'Phone number',
+        email: '',
+        password: '',
+        editing: true,
+
       }
       this.handleChange = this.handleChange.bind(this);
      // this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-  state = { email: '', password: '', errorMessage: null, ErrorStatus: true}
+  state = {errorMessage: null, ErrorStatus: true}
 
   static navigationOptions = {
         header: null,
@@ -35,15 +40,20 @@ constructor(props) {
                 });
               }
 
-handleSignUp = () => {
+handleSignUp = (newPostKey) => {
       firebase
       .auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(() => {
-      addItems1(this.state.email),
-      this.props.navigation.navigate('Main')
-      }
-      )
+      .then(() => {addItems1(this.state.email, newPostKey)})
+      .then(() => {this.props.navigation.navigate('Search', {
+      UID: newPostKey,
+      name: 'First name',
+      lname: 'Last name',
+      phone: 'Phone number',
+
+      });
+
+      })
 
       .catch(error => this.setState({ errorMessage: error.message }))
     }
@@ -68,6 +78,7 @@ handleSignUp = () => {
              }
 
        buttonClickFun = () => {
+
        const {password} = this.state;
        const {email} = this.state;
           if (password == null && email != null){
@@ -80,7 +91,8 @@ handleSignUp = () => {
                          Alert.alert("Please enter both the email and password to proceed");
                       }
                      if( email != null && password != null){
-                     this.handleSignUp();
+                     let newPostKey = firebase.database().ref().child('users').push().key;
+                     this.handleSignUp(newPostKey);
                      }
           }
 
@@ -101,7 +113,11 @@ handleSignUp = () => {
        return false;
 
      };
+
 render() {
+if(this.state.isLoading){
+    return <View><Text> loading... </Text></View>
+}
 
     return (
       <View style={styles.LoginAndSignup}>
@@ -119,6 +135,7 @@ render() {
           onChangeText={this.OnChangeTextFun.bind(this)}
           onChange={this.handleChange}
           value={this.state.email}
+          maxLength = {35}
         />
         <TextInput
           secureTextEntry
@@ -128,6 +145,7 @@ render() {
           placeholderTextColor={'white'}
           onChangeText={this.OnChangeTextFunPass.bind(this)}
           value={this.state.password}
+          maxLength = {25}
         />
 
              { this.state.ErrorStatus == false ? (
@@ -165,22 +183,20 @@ render() {
     );
   }
 }
-let newPostKey
 
-const addItems1 =  (item) => {
-            AsyncStorage.removeItem('UID')
-            let postData = {
-                email: item,
-                fname: 'First name',
-                lname: 'Last name',
-                phone: 'Phone number'
-              };
+const addItems1 =  (item, newPostKey) => {
 
-              newPostKey = firebase.database().ref().child('users').push().key;
-              AsyncStorage.setItem('UID', newPostKey);
-            let updates = {};
-              updates['/users/' + newPostKey] = postData;
-              return firebase.database().ref().update(updates);
+
+                 AsyncStorage.setItem('UID', newPostKey);
+
+
+             db.ref('/users/' +newPostKey).update({
+                            email: item,
+                            fname: 'First name',
+                            lname: 'Last name',
+                            phone: 'Phone number'
+                            });
 
              }
+
 
