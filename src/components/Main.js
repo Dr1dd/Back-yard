@@ -124,7 +124,7 @@ componentDidMount() {
       const { currentUser } = firebase.auth()
 
       this.setState({ currentUser })
-
+        AsyncStorage.getItem('UID').then((value) => (UIDK = value))
 
         AsyncStorage.getItem('user_data').then((user_data_json) => {
           let user_data = JSON.parse(user_data_json);
@@ -166,12 +166,7 @@ render() {
 
 return (
 
- <KeyboardAwareScrollView
-      style={{flex: 1}}
-      resetScrollToCoords={{ x: 0, y: 0 }}
-      contentContainerStyle={[styles.Main, { justifyContent: 'center', flexGrow: 1}]}
-      scrollEnabled={true}
-    >
+
 
  <View style={styles.Main}>
 
@@ -300,7 +295,6 @@ return (
                      </HandleBack>
                 </View>
                 </View>
-                    </KeyboardAwareScrollView>
     );
   }
   }

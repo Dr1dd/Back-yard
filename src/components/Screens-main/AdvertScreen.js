@@ -32,17 +32,14 @@ constructor(props) {
        User: '',
        Description: '',
        ADUIDK: '',
+       loading: true,
 
     };
 
   }
   state = { currentUser: null }
 
-onBack = () => {
-       return this.props.navigation.navigate('Search')
 
-
-     };
    componentDidMount() {
     const { currentUser } = firebase.auth()
                           this.setState({ currentUser })
@@ -73,39 +70,36 @@ onBack = () => {
                                         Title: data.Title,
                                         Description: data.Description,
                                         URL: data.imgUrl,
+                                        Phone: data.PhoneNum
 
                                     })
 
 
                                    })
-           db.ref('/users/'+UIDK).once('value', snapshot => {
-                                            data = snapshot.val();
-                                              this.setState({
-                                                  Phone: data.phone,
-                                                  Name: data.fname,
 
-                                              })
-
-
-                                             })
 
 
                                });
+                               this.setState({
+                               loading: false,
+                               })
 
     }
 
 
   render() {
+                if ( this.state.loading ) {
+                    return (
+                            <View style={{flex: 1, justifyContent:'center', backgroundColor: '#5F6A74'}}>
+                            <ActivityIndicator size="large"/>
+                            <Text style={{textAlign: 'center'}}>Loading</Text>
+                            </View>
+                    );
+                }
   const { currentUser } = this.state;
     return (
         <ScrollView style={styles.Main}>
-        <HandleBack onBack={this.onBack}>
-                          <View>
-                                 <TouchableOpacity onPress={() => this.setState( {editing: true})}>
-                                      <Text>  </Text>
-                                    </TouchableOpacity>
-                                  </View>
-                                </HandleBack>
+
 
               <View style={{flex: 2, flexDirection: 'column'}}>
                             <Text style={{
@@ -137,10 +131,21 @@ onBack = () => {
                </View>
 
            <View style={styles.AdvertImageBlock}>
-            <Image
-                             source= {{uri : this.state.URL}}
-                                style= {styles.ImageStyle2}
-                                />
+  {
+                           (() => {
+                              switch (this.state.URL) {
+                                  case '':
+                                     return null
+                                  default:
+                                     return (
+                                        <Image
+                                             source= {{uri : this.state.URL}}
+                                              style= {styles.ImageStyle2}
+                                                     />
+                                                                        )
+                                                }
+                                              })()
+                                             }
            </View>
            <View style={{flex: 2, flexDirection: 'column'}}>
                           <Text style={{

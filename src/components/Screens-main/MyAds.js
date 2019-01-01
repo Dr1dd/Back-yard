@@ -35,16 +35,13 @@ constructor(props) {
        ADUIDK: '',
        picId: '',
        animating: false,
+
     };
 
   }
   state = { currentUser: null }
 
-onBack = () => {
-       return this.props.navigation.navigate('MyListings')
 
-
-     };
    componentDidMount() {
     const { currentUser } = firebase.auth()
                           this.setState({ currentUser })
@@ -76,24 +73,15 @@ onBack = () => {
                                         Description: data.Description,
                                         URL: data.imgUrl,
                                         picId: data.PicId,
+                                        Phone: data.PhoneNum
 
                                     })
                                     picID = JSON.stringify(data.PicId)
                                      console.log(picID)
 
                                    })
-                                 console.log(UIDK)
-           db.ref('/users/'+UIDK).once('value', snapshot => {
-                                            data = snapshot.val();
-                                            console.log(UIDK)
-                                              this.setState({
-                                                  Phone: data.phone,
-                                                  Name: data.fname,
-
-                                              })
 
 
-                                             })
 
 
                                });
@@ -116,16 +104,11 @@ onBack = () => {
    },3000)
    }
   render() {
+
   const { currentUser } = this.state;
     return (
         <ScrollView style={styles.Main}>
-        <HandleBack onBack={this.onBack}>
-                          <View>
-                                 <TouchableOpacity onPress={() => this.setState( {editing: true})}>
-                                      <Text>  </Text>
-                                    </TouchableOpacity>
-                                  </View>
-                                </HandleBack>
+
 
               <View style={{flex: 2, flexDirection: 'column'}}>
                             <Text style={{
@@ -157,10 +140,23 @@ onBack = () => {
                </View>
 
            <View style={styles.AdvertImageBlock}>
-            <Image
-                             source= {{uri : this.state.URL}}
-                                style= {styles.ImageStyle2}
-                                />
+
+  {
+                           (() => {
+                              switch (this.state.URL) {
+                                  case '':
+                                     return null
+                                  default:
+                                     return (
+                                        <Image
+                                             source= {{uri : this.state.URL}}
+                                              style= {styles.ImageStyle2}
+                                                     />
+                                                                        )
+                                                }
+                                              })()
+                                             }
+
            </View>
            <View style={{flex: 2, flexDirection: 'column'}}>
                           <Text style={{

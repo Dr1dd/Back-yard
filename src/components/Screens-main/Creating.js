@@ -69,6 +69,7 @@ constructor(props) {
       UID: '',
       uri: '',
       URL: '',
+      Phone: '',
       timePassed: false,
       animating: false,
       itemLength: 0,
@@ -100,6 +101,14 @@ constructor(props) {
                                  loaded: true
 
                                });
+
+                               db.ref('/users/'+UIDK).once('value', snapshot => {
+                                                                           data = snapshot.val();
+                                                                             this.setState({
+                                                                                 Phone: data.phone,
+                                                                             })
+                                                                             })
+
                             numberOfAds = 0
                      var dbref = db.ref('Adverts/').orderByChild("UserId").equalTo(UIDK);
                                           this.setState ( {dbulref: dbref});
@@ -164,7 +173,7 @@ setTimePassed() {
 
                     }
                     else {
-                 addAdvertItems(this.state.Title, this.state.Description, this.state.City, this.state.UID, this.state.uploadURL, sessionId)
+                 addAdvertItems(this.state.Title, this.state.Description, this.state.City, this.state.UID, this.state.uploadURL, this.state.Phone, sessionId)
                       this.setState({
                         animating: false,
                           })
@@ -174,7 +183,8 @@ setTimePassed() {
                             [
                                    { text: 'Search screen', onPress: () => this.props.navigation.navigate('Search')},
                                    { text: 'Profile screen', onPress: () => this.props.navigation.navigate('Profile')}
-                            ]
+                            ],
+                            { cancelable: false}
                             )
                     }
 
@@ -349,7 +359,7 @@ setTimePassed() {
 const Cities = ['Vilnius', 'Kaunas', 'Klaipėda', 'Šiauliai', 'Panevėžys', 'Alytus', 'Marijampolė', 'Mažeikiai', 'Jonava', 'Utena', 'Kėdainiai', 'Telšiai', 'Visaginas', 'Tauragė', 'Ukmergė', 'Plungė', 'Šilutė', 'Kretinga', 'Radviliškis', 'Druskininkai', 'Palanga', 'Rokiškis', 'Biržai', 'Gargždai', 'Kuršėnai', 'Elektrėnai', 'Jurbarkas', 'Garliava', 'Vilkaviškis', 'Molėtai', 'Raseiniai', 'Anykščiai', 'Lentvaris', 'Prienai', 'Joniškis', 'Kupiškis', 'Zarasai', 'Ignalina'];
 
 
-const addAdvertItems = (title, description, city, UID, URL, PicName) => {
+const addAdvertItems = (title, description, city, UID, URL, Phone, PicName) => {
             AsyncStorage.removeItem('AdKey')
 
               newAdPostKey = firebase.database().ref().child('Adverts').push().key;
@@ -362,6 +372,7 @@ const addAdvertItems = (title, description, city, UID, URL, PicName) => {
                 UserId: UID,
                 imgUrl: URL,
                 AdKey: newAdPostKey,
+                PhoneNum: Phone,
                 PicId: PicName,
                 });
              }
