@@ -1,13 +1,24 @@
 import React, { Component} from 'react';
-import { StyleSheet, Platform, Text, TextInput, View, Button, TouchableOpacity, BackHandler, Alert } from 'react-native';
+import { StyleSheet, Platform, AsyncStorage, Text, TextInput, View, Button, TouchableOpacity, BackHandler, Alert } from 'react-native';
 import { createStackNavigator, StackNavigator } from 'react-navigation';
 import firebase from 'react-native-firebase';
 import Main from './Main';
 import styles from './styles';
 import HandleBack from './HandleBack';
-
+import { db } from '../Services/db';
+//Login, viskas yra labai panašiai kaip ir SignUp klasėje
 export default class Logges extends React.Component {
-  state = { email: '', password: '', errorMessage: null, ErrorStatus: true, editing: true,};
+constructor(props) { // konstruktorius
+      super(props);
+      this.state ={
+        email: '',
+        password: '',
+
+      }
+        this.LoginInfo = this.LoginInfo.bind(this);
+      }
+
+  state = { errorMessage: null, ErrorStatus: true, editing: true,};
 
     static navigationOptions = {
             header: null,
@@ -15,14 +26,24 @@ export default class Logges extends React.Component {
             }
 
 
-handleLogin = () => {
+handleLogin = () => { //
       firebase
         .auth()
         .signInWithEmailAndPassword(this.state.email, this.state.password)
-        .then(() => this.props.navigation.navigate('Firstscreen'))
+        .then(()=> {this.LoginInfo()})
+        .then(() => {this.props.navigation.navigate('Search')})
         .catch(error => this.setState({ errorMessage: error.message }))
     }
+    LoginInfo=() =>{
+        var dbref = db.ref('users/').orderByChild("email").equalTo(this.state.email);
+        dbref.once('value', snapshot => {
+        snapshot.forEach(function(childSnapshot) {
+         var UIDK = childSnapshot.key;
+         AsyncStorage.setItem('UID', UIDK);
+        })
+        })
 
+    }
 
      OnChangeTextFunction = (email) =>{
          if(email.trim() != 0){

@@ -9,43 +9,43 @@ import HandleBack from './HandleBack';
 
 import { db } from '../Services/db';
 import { addItem } from '../Services/ItemService';
-
-export default class SignUp extends React.Component {
-constructor(props) {
-      super(props);
-      this.state = {
-        mail: '',
+//Registracija
+export default class SignUp extends React.Component { // exportuojama (kitiems failams pasiekiama) Signup klasė, kuri yra pagrindinė šiame faile.
+constructor(props) { // konstruktorius
+      super(props); // kviečiamas 'parent' elementas
+      this.state = { // state, būsena?
+        mail: '', // mail būsena pradinė yra nustatoma tuščia t.y. ''
         fname: 'First name',
         lname: 'Last name',
         phone: 'Phone number',
         email: '',
         password: '',
-        editing: true,
+        editing: true, // boolean tipo būsena,
 
       }
-      this.handleChange = this.handleChange.bind(this);
+      this.handleChange = this.handleChange.bind(this); // bindinimas prie 'parent' elemento
      // this.handleSubmit = this.handleSubmit.bind(this);
     }
 
   state = {errorMessage: null, ErrorStatus: true}
 
-  static navigationOptions = {
-        header: null,
+  static navigationOptions = { // navigacijos pasirinkimai
+        header: null, // nėra antraštės
 
         }
 
-          handleChange(e) {
-                this.setState({
-                  mail: e.nativeEvent.text
+          handleChange(e) { // funkcija, kuri reaguoja tada, kai yra kreipiamasi į ją
+                this.setState({ // setState nustato būseną
+                  mail: e.nativeEvent.text // mail būsenai nustatomi įrašomi simboliai
                 });
               }
 
-handleSignUp = (newPostKey) => {
-      firebase
+handleSignUp = (newPostKey) => { // Komunikacija su Firebase duombaze.
+      firebase //Naudojama 'promise'
       .auth()
-      .createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(() => {addItems1(this.state.email, newPostKey)})
-      .then(() => {this.props.navigation.navigate('Search', {
+      .createUserWithEmailAndPassword(this.state.email, this.state.password) // kūriama vartotojo paskyra
+      .then(() => {addItems1(this.state.email, newPostKey)}) // Kreipiamasi į funkciją, su email būsena ir paskyros unikaliu kodu.
+      .then(() => {this.props.navigation.navigate('Search', { // po registracijos pereinama į Search langą
       UID: newPostKey,
       name: 'First name',
       lname: 'Last name',
@@ -55,10 +55,10 @@ handleSignUp = (newPostKey) => {
 
       })
 
-      .catch(error => this.setState({ errorMessage: error.message }))
+      .catch(error => this.setState({ errorMessage: error.message })) // jeigu randamas error, tada į errorMessage įrašoma error.mesage žinutė (šiuo atveju tai yra firebase žinutė)
     }
 
-     OnChangeTextFun = (email) =>{
+     OnChangeTextFun = (email) =>{ // funkcija, kuri tikrina ar įvedamame email lange nėra tuščių tarpų
      if(email.trim() != 0){
              this.setState({ email: email });
              this.setState({ ErrorStatus : true}) ;
@@ -67,7 +67,7 @@ handleSignUp = (newPostKey) => {
                this.setState({ ErrorStatus : false}) ;
            }
      }
-         OnChangeTextFunPass = (password) =>{
+         OnChangeTextFunPass = (password) =>{ //funkcija, kuri tikrina ar įvedamame slaptažodžio lange nėra tuščių tarpų
              if(password.trim() != 0){
                      this.setState({ password: password });
                      this.setState({ ErrorStatus : true}) ;
@@ -77,35 +77,35 @@ handleSignUp = (newPostKey) => {
                    }
              }
 
-       buttonClickFun = () => {
+       buttonClickFun = () => { // Ši funkcija bus naudojama paspaudus Signup mygtuką
 
-       const {password} = this.state;
+       const {password} = this.state; // į const įrašome password būsena
        const {email} = this.state;
-          if (password == null && email != null){
-           Alert.alert("Please enter the password to proceed");
+          if (password == null && email != null){ // Jeigu slaptažodis ir emailas yra tušti langai
+           Alert.alert("Please enter the password to proceed"); //
             }
-           if (email == null && password != null){
+           if (email == null && password != null){ //Jeigu slaptažodis yra tuščias, o emailas ne:
               Alert.alert("Please enter the email to proceed");
            }
            if (email == null && password == null){
                          Alert.alert("Please enter both the email and password to proceed");
                       }
-                     if( email != null && password != null){
-                     let newPostKey = firebase.database().ref().child('users').push().key;
-                     this.handleSignUp(newPostKey);
+                     if( email != null && password != null){ // jeigu viskas atitinka
+                     let newPostKey = firebase.database().ref().child('users').push().key; //Duombazėje sukuriamas unikalus paskyros kodas
+                     this.handleSignUp(newPostKey); // kreipiamasi į Registracijos funkcija, kuri kuria paskyras
                      }
           }
 
-  onBack = () => {
+  onBack = () => { // Funkcija, kuri yra naudojama paspaudus atgal mygtuką pačiam mobiliąjame įrenginyje
             if (this.state.editing) {
-         Alert.alert(
+         Alert.alert( // Alert, išsokstantis langas su žinute ir pasirinkimais
            "You're going back",
            "Are you sure you want to close the app?",
            [
-             { text: "Go back", onPress: () => {}, style: "cancel" },
-             { text: "Exit", onPress: () => BackHandler.exitApp() },
+             { text: "Go back", onPress: () => {}, style: "cancel" }, // grįžtama į tą patį langą
+             { text: "Exit", onPress: () => BackHandler.exitApp() }, //išeinama iš programėlės
            ],
-           { cancelable: false },
+           { cancelable: false }, // nustatoma, kad negalima paspausti už alerto ir taip išeiti, būtina pasirinkti kažką iš alert siūlomų pasirinkimų
          );
          return true;
        }
@@ -113,7 +113,7 @@ handleSignUp = (newPostKey) => {
        return false;
 
      };
-
+//Renderimas, t.y. viskas ką matome ekrane
 render() {
 if(this.state.isLoading){
     return <View><Text> loading... </Text></View>
@@ -184,14 +184,14 @@ if(this.state.isLoading){
   }
 }
 
-const addItems1 =  (item, newPostKey) => {
+const addItems1 =  (item, newPostKey) => { //funkcija komunikuojanti su Firebase duombaze
 
 
-                 AsyncStorage.setItem('UID', newPostKey);
+                 AsyncStorage.setItem('UID', newPostKey); // su Asyncstorage nustatomas UID, kuris išlieka tik vartotojo telefone
 
 
-             db.ref('/users/' +newPostKey).update({
-                            email: item,
+             db.ref('/users/' +newPostKey).update({ // db yra importuota konfiguracija iš Services/db.js (su Api key ir t.t). ref -reference t.y. kur bus įvedama informacija, update t.y. atnaujinama jau esanti informacija, arba sukuriamos atitinkamos vietos duomenims
+                            email: item, //įrašomi atitinkami duomenys į duombaze
                             fname: 'First name',
                             lname: 'Last name',
                             phone: 'Phone number'

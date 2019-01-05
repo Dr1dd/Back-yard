@@ -2,14 +2,14 @@ import { StyleSheet, Dimensions, Platform, PixelRatio } from 'react-native';
 import { responsiveHeight, responsiveWidth, responsiveFontSize } from 'react-native-responsive-dimensions';
 
 
-
+//Stiliai
 const {
-  height: SCREEN_HEIGHT,
+  height: SCREEN_HEIGHT, // telefono ekrano dydis - aukštis
 } = Dimensions.get('window');
-const { width: WIDTH } = Dimensions.get('window')
-const scale = WIDTH / 320;
+const { width: WIDTH } = Dimensions.get('window') // pastovus dydis išsaugomas. Išsaugomas telefono ekrano plotis
+const scale = WIDTH / 320; // skalė palyginti su 320
 
-export function normalize(size) {
+export function normalize(size) { // normalize funkcija, kuri parenka Šrifto dydį pagal ekrano dydį
   const newSize = size * scale
   if (Platform.OS === 'ios') {
     return Math.round(PixelRatio.roundToNearestPixel(newSize))
@@ -23,9 +23,9 @@ let iconSize = 24;
 export default StyleSheet.create({
 
   container1:{
-             flex: 1,
-             flexDirection: 'column',
-             backgroundColor: '#5F6A74',
+             flex: 1, // išsidėstymas ekrane, jeigu daugiau niekur nebūtų naudojama flex, tai flex: 1 reikštų, kad užimamas visas ekrano plotas
+             flexDirection: 'column', // komponentų išsidėstymas ekrane (column, row ir t.t.)
+             backgroundColor: '#5F6A74', // fono spalva
 
 
   },
@@ -33,15 +33,15 @@ export default StyleSheet.create({
                 flex: 1,
                flexDirection: 'column',
                backgroundColor: '#5F6A74',
-               justifyContent: 'center',
-               alignItems: 'center',
+               justifyContent: 'center', // vieta komponento viduje
+               alignItems: 'center', // lygiavimas
 
 
   },
   HeaderName:{
              flex: 13,
 
-             overflow: 'visible',
+             overflow: 'visible', // komponentas gali būti matomas nepaisant kitų komponentų, kurie galimai uždengtų.
 
 
 
@@ -56,27 +56,27 @@ export default StyleSheet.create({
     },
   HeaderText:{
              flex: 5,
-             fontSize: responsiveFontSize(5.5),
-             fontWeight: 'bold',
-             color: 'white',
+             fontSize: responsiveFontSize(5.5), // Šrifto dydis
+             fontWeight: 'bold', // Šrifto storis
+             color: 'white', // spalva Šrifto
              justifyContent: 'center',
              overflow: 'visible',
-              textAlign:'center',
+              textAlign:'center', // Teksto lygiavimas
               alignSelf: 'center',
 
   },
   button: {
-              width: WIDTH -55,
-              height: 50,
+              width: WIDTH -55, // plotis komponento
+              height: 50, // komponento aukštis
 
-              borderColor: 'black',
+              borderColor: 'black', // komponento kraštų spalva
               textAlign: 'center',
               fontWeight: 'bold',
               color: 'white',
-              borderRadius: 30,
+              borderRadius: 30, // komponento kraštų spindulys
               fontSize: responsiveFontSize(4.5),
-              marginHorizontal: 25,
-              margin: 15,
+              marginHorizontal: 25, // komponento tarpas tarp kitų komponentų ( horizontaliai)
+              margin: 15, // komponento tarpas tarp kitų komponentų
               backgroundColor: '#28343E',
               alignItems: 'center',
               justifyContent: 'center'
@@ -87,7 +87,7 @@ export default StyleSheet.create({
               height: 50,
               borderRadius: 30,
               fontSize: responsiveFontSize(3),
-              paddingLeft: 30,
+              paddingLeft: 30, // sugeneruojamas tarpas tarp komponentų
               backgroundColor: '#415362',
               color: 'white',
               marginHorizontal: 25,
