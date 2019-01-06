@@ -6,6 +6,8 @@ Pagr failai:
 src/Services/db.js
  
  
+ 
+ 
 src/components/
 
 HandleBack.js,
@@ -14,6 +16,8 @@ Logges.js,
 Main.js,
 Signup.js,
 styles.js
+ 
+ 
  
  
 src/components/Screens-main/
