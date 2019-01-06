@@ -17,7 +17,8 @@ let adUIDK
 
 let UIDK
 let picID
-export default class MyAds extends React.Component {
+// Mano skelbimai
+export default class MyAds extends React.Component { // My ads klasė, kuri yra beveik identiška AdvertScreen.js failiuko klasei AdvertScreen  skirtumas: pridėtas delete mygtukas
 static navigationOptions = {
       header: null,
 drawerLabel: () => null
@@ -45,13 +46,13 @@ constructor(props) {
    componentDidMount() {
     const { currentUser } = firebase.auth()
                           this.setState({ currentUser })
-                          AsyncStorage.getItem('AdKey').then((value) => {
+                          AsyncStorage.getItem('AdKey').then((value) => { // gaunamas skelbimo id
                                                          adUIDK = value
                                                         this.setState({
                                                          ADUIDK: value,
                                                             });
                                                      });
-             AsyncStorage.getItem('UID').then((value) => {
+             AsyncStorage.getItem('UID').then((value) => { // gaunamas user id
                                       UIDK = value
                                      this.setState({
                                       UID: value,
@@ -65,7 +66,7 @@ constructor(props) {
                                  loaded: true
 
                                });
-         db.ref('/Adverts/'+adUIDK).once('value', snapshot => {
+         db.ref('/Adverts/'+adUIDK).once('value', snapshot => { // gaunami skelbimo duomenys
                                   data = snapshot.val();
                                     this.setState({
                                         City: data.City,
@@ -88,20 +89,20 @@ constructor(props) {
 
     }
 
-   Del = () =>{
+   Del = () =>{ // delete funkcija, kuri trina skelbimus iš firebase duombazės ir nuotraukų saugyklos
      this.setState({
-                          animating: true })
+                          animating: true }) // pradeda animaciją.
     AsyncStorage.getItem('AdKey').then((value) => {
-              adUIDK = value
+              adUIDK = value // gaunamas skelbimo unikalus raktas
             })
-    stor.ref('images').child(picID).delete();
-    db.ref('Adverts').child(adUIDK).remove();
-   AsyncStorage.removeItem('AdKey')
+    stor.ref('images').child(picID).delete(); // ištrinama skelbimo nuotrauka
+    db.ref('Adverts').child(adUIDK).remove(); // iš duomenų bazės ištrinamas skelbimas
+   AsyncStorage.removeItem('AdKey') // ištrinamas iš įrenginio unikalus skelbimo id
    setTimeout( ()=> {
    this.setState({
-                             animating: false })
-      this.props.navigation.navigate('MyListings')
-   },3000)
+                             animating: false }) // animacija išjungiama
+      this.props.navigation.navigate('MyListings') // grįžtama atgal
+   },3000) // delay 3 sekundžių
    }
   render() {
 
@@ -125,6 +126,7 @@ constructor(props) {
                              {this.state.Title}
                             </Text>
                          </View>
+                         {/* responisveFontSize yra dydis, kuris yra suskaičiuojamas kiekvienam įrenginiui skirtingai (pagal ekrano dydį) */}
                <View style={{flex: 2, flexDirection: 'column'}}>
                <Text style={{
                fontSize: responsiveFontSize(3.5),
@@ -140,7 +142,7 @@ constructor(props) {
                </View>
 
            <View style={styles.AdvertImageBlock}>
-
+            {/* Tas pats kaip ir AdvertScreen.js*/}
   {
                            (() => {
                               switch (this.state.URL) {
@@ -202,6 +204,8 @@ constructor(props) {
                  {this.state.City}
                 </Text>
            </View>
+
+           {/* Viskas tas pats kaip ir AdverScreen.js, {this.state.City} į ekraną rašo city būseną */}
            <View style={{flex: 2, flexDirection: 'row'}}>
                       <Text style={{
                               fontSize: responsiveFontSize(3),
@@ -241,6 +245,7 @@ constructor(props) {
 
 
                       </View>
+                      {/* Animacija + Delete mygtukas, kuris iššaukia funkciją Del */}
                     <View style={{flex: 2, flexDirection: 'column'}}>
                     {this.state.animating &&
                                       <View>

@@ -8,7 +8,7 @@ import Main from '../Main';
 
 export default class Logout extends React.Component {
 constructor(props) {
-                  super(props);
+                  super(props); // būsenos
                   this.state = {
                    fname: '',
                    lname: '',
@@ -20,17 +20,18 @@ constructor(props) {
     drawerLabel: 'Logout',
     header: null,
        drawerIcon: () => (
-             <MaterialIcons name={'exit-to-app'} size={25} />
+             <MaterialIcons name={'exit-to-app'} size={25} /> // ikona
              )
   };
 
-  componentDidMount() {
+  componentDidMount() { // komunikacija su firebase, reikalinga logout'ui
                     firebase
                    .auth()
                    .signOut()
                    .then(() => this.props.navigation.navigate('Logges'))
                    .catch(error => this.setState({ errorMessage: error.message }))
     }
+    //Paprasčiausias activity indicator (animacija)
   render() {
 
      return (

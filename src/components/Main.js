@@ -26,7 +26,7 @@ let UIDK
 let news
 let data
 const NON_DIGIT = '/[^\d]/g'
-
+// Profilis
 export default class Main extends React.Component {
   constructor(props) {
                   super(props);
@@ -61,10 +61,10 @@ export default class Main extends React.Component {
              editing: true,
            };
 
-handleChange(e) {
+handleChange(e) { //Tiesiog funkcija, kuri reaguoja, kai naudotojas pradeda rašyti
 
       this.setState({
-        fname: e.nativeEvent.text
+        fname: e.nativeEvent.text // į fname būsena įrašomi simboliai iš įvesties
       });
 
     };
@@ -75,8 +75,8 @@ handleChange(e) {
           });
 
         }
-   handleChange2(text){
-    this.setState({phone: text.replace(/[^0-9]/g, ''),})
+   handleChange2(text){ // funkcija, kuri reaguoja, kai naudotojas pradeda rašyti
+    this.setState({phone: text.replace(/[^0-9]/g, ''),}) // į phone būseną įrašomi skaičiai, jeigu yra simbolių ne skaičių - jie paprasčiausiai yra ignoruojami
    }
 
 
@@ -86,24 +86,24 @@ handleChange(e) {
    AsyncStorage.getItem('UID').then((value) => (UIDK = value))
   }
 
-   handleSubmit() {
+   handleSubmit() { // funkcija, kuri bus panaudota paspaudus Save mygtuką
    this.setState({
-    animating: true,
+    animating: true, // pradedama animacija
    })
-    AsyncStorage.getItem('UID').then((value) => (UIDK = value))
-    addItems(this.state.fname, this.state.lname, this.state.phone, UIDK)
-         setTimeout(() => {
+    AsyncStorage.getItem('UID').then((value) => (UIDK = value)) // gaunamas Naudotojo Unikalus id
+    addItems(this.state.fname, this.state.lname, this.state.phone, UIDK) // Kreipiamasi į funkciją, kuri nusiųs duomenis į duombazę
+         setTimeout(() => { // nustatomas laiko tarpas, po kurio bus pakeista animating būsena
               this.setState({
               animating: false,
               })
-            }, 1500);
+            }, 1500); // nustatyta 1500 ms
         }
 
 
 
 
 
-          onBack = () => {
+          onBack = () => { // atgal mygtuko funkcija
                 if (this.state.editing) {
                   Alert.alert(
                     "You're going back",
@@ -120,21 +120,21 @@ handleChange(e) {
                 return false;
 
 }
-componentDidMount() {
-      const { currentUser } = firebase.auth()
+componentDidMount() { //Komponentų 'Užmountinimas"
+      const { currentUser } = firebase.auth() // gaunamas dabartinis naudotojas is firebase
 
       this.setState({ currentUser })
-        AsyncStorage.getItem('UID').then((value) => (UIDK = value))
+        AsyncStorage.getItem('UID').then((value) => (UIDK = value)) // gaunamas naudotojo Unikalus id
 
-        AsyncStorage.getItem('user_data').then((user_data_json) => {
+        AsyncStorage.getItem('user_data').then((user_data_json) => { // gaunami naudotojo duomenys
           let user_data = JSON.parse(user_data_json);
-                db.ref('/users/'+UIDK).once('value', snapshot => {
-                                       if(snapshot.val() !=null){
+                db.ref('/users/'+UIDK).once('value', snapshot => { // kreipiamasi į duombazę su unikaliu vartotojo id
+                                       if(snapshot.val() !=null){ // jei gauti duomenys egzistuoja
                                        data = snapshot.val();
 
                                         this.setState({
                                                      fname: data.fname,
-                                                     phone: data.phone,
+                                                     phone: data.phone, // šie duomenys bus naudojami render()
                                                      lname: data.lname,
                                                      });
                                        }
@@ -169,9 +169,10 @@ return (
 
 
  <View style={styles.Main}>
-
+{/* Hamburger icona, kuri yra naudojama atidaryti drawer (stalčių)*/}
  <View style={styles.Hamburger}>
         <HeaderComponent {...this.props} />
+        {/* Antraštės pavadinimas */}
  <View style={styles.HeaderName}>
             <Text style={styles.HeaderText}>
                 Profile
@@ -185,7 +186,7 @@ return (
               }}
             />
             <View style={{flex: 1}}/>
-
+{/* Vardas */}
  <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
         <Text style={styles.FLNameStyle}>
         First name:
@@ -195,6 +196,7 @@ return (
         </Text>
 
 </View>
+{/* Vardo įvestis, limitacija: 21 simbolių*/}
  <View style={{flex: 1}}>
 
         <TextInput
@@ -226,6 +228,7 @@ return (
 
         </View>
          <View style={{flex: 1}}>
+         {/* Pavardės įvestis, 21 simbolių max */}
    <TextInput
 
           autoCapitalize="none"
@@ -243,7 +246,7 @@ return (
                                />
                 </View>
       <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
-
+{/* Telefono numeris*/}
  <Text style={styles.FLNameStyle}>
          Phone number:
          <Text style={styles.FLNameStyleWhite}>
@@ -251,6 +254,10 @@ return (
                          </Text>
          </Text>
 </View>
+{/* Telefono numerio įvestis
+    Max 10 simbolių,
+    klaviatūros tipas: numeriai
+*/}
           <View style={{flex: 1}}>
             <TextInput
 
@@ -271,12 +278,13 @@ return (
                                    />
            </View>
           <View style={{flex: 4}}>
-
+{/* Save mygtukas */}
            <TouchableOpacity  onPress={this.handleSubmit}>
               <Text style = {styles.button}>
             Save
              </Text>
             </TouchableOpacity>
+        {/* Animacija, kuri trunka 1.5 sec*/}
              {this.state.animating &&
                               <View>
                                   <ActivityIndicator
@@ -299,7 +307,7 @@ return (
   }
   }
 const addItems = (first, last, phone, UIDK) => {
-              db.ref('/users/' + UIDK).update({
+              db.ref('/users/' + UIDK).update({ // duomenys įrašomi į duombazę
                 fname: first,
                 lname: last,
                 phone: phone,

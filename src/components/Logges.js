@@ -26,7 +26,7 @@ constructor(props) { // konstruktorius
             }
 
 
-handleLogin = () => { //
+handleLogin = () => { //Komunikacija su firebase dėk prisijungimo
       firebase
         .auth()
         .signInWithEmailAndPassword(this.state.email, this.state.password)
@@ -34,18 +34,18 @@ handleLogin = () => { //
         .then(() => {this.props.navigation.navigate('Search')})
         .catch(error => this.setState({ errorMessage: error.message }))
     }
-    LoginInfo=() =>{
-        var dbref = db.ref('users/').orderByChild("email").equalTo(this.state.email);
-        dbref.once('value', snapshot => {
+    LoginInfo=() =>{ // Funkcija, kuri išsaugo Unikalų Id
+        var dbref = db.ref('users/').orderByChild("email").equalTo(this.state.email); // tikrinama Duomenų bazėje ar yra sutampantis email paštas
+        dbref.once('value', snapshot => { // padaroma duomenų kopija
         snapshot.forEach(function(childSnapshot) {
-         var UIDK = childSnapshot.key;
-         AsyncStorage.setItem('UID', UIDK);
+         var UIDK = childSnapshot.key; // įrašomas rasto email 'parent', t.y. paskyros unikalus id
+         AsyncStorage.setItem('UID', UIDK); // email išsaugomas AsyncStorage pagalba
         })
         })
 
     }
 
-     OnChangeTextFunction = (email) =>{
+     OnChangeTextFunction = (email) =>{ // tas pats kaip ir SignUp klasėje
          if(email.trim() != 0){
                  this.setState({ email: email });
                  this.setState({ ErrorStatus : true}) ;
@@ -54,7 +54,7 @@ handleLogin = () => { //
                   this.setState({ ErrorStatus : false}) ;
                }
          }
-             OnChangeTextFunPassword = (password) =>{
+             OnChangeTextFunPassword = (password) =>{ // tas pats kaip ir SignUp klasėje
                  if(password.trim() != 0){
                          this.setState({ password: password });
                          this.setState({ ErrorStatus : true}) ;
@@ -64,7 +64,7 @@ handleLogin = () => { //
                        }
                  }
 
-           buttonClickFunction = () => {
+           buttonClickFunction = () => { // tas pats kaip ir SignUp klasėje
            const {password} = this.state;
            const {email} = this.state;
               if (password == "" && email != ""){
@@ -80,7 +80,7 @@ handleLogin = () => { //
                          this.handleLogin();
                          }
               }
-              onBack = () => {
+              onBack = () => { // paspaudus atgal mygtuką pereinama į signup langą
                           if (this.state.editing) {
                        {()=>this.props.navigation.navigate('SignUp')}
                        return true;
@@ -89,6 +89,7 @@ handleLogin = () => { //
                      return false;
 
                    };
+  // Kas vyksta render: Dvi įvestys, mygtukas, tekstas po mygtuku, kurį galima paspausti
   render() {
     return (
       <View style={styles.LoginAndSignup}>

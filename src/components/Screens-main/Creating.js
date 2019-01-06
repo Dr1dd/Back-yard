@@ -10,42 +10,42 @@ import firebase from 'react-native-firebase';
 import RNFetchBlob from 'rn-fetch-blob';
 import ImagePicker from 'react-native-image-picker';
 
-
-let UIDK
-let sessionId
-const Blob = RNFetchBlob.polyfill.Blob;
+// Skelbimų kūrimo klasė, funkcijos
+let UIDK // vartotojo unikalus id
+let sessionId // nuotraukos id, kuri bus nustatoma pagal dabartinį laiką
+const Blob = RNFetchBlob.polyfill.Blob; // Blob'ai bus naudojami siunčiant nuotraukas į saugyklą
 const fs = RNFetchBlob.fs;
 window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
 window.Blob = Blob;
 let UriResponse
 const maxLength = 200;
-let adUIDK
+let adUIDK // skelbimo id
 let otherArgs = 1
 let numberOfAds = 0
-const uploadImage = (uri, mime = 'application/octet-stream') => {
-   return new Promise((resolve, reject) => {
+const uploadImage = (uri, mime = 'application/octet-stream') => { // upload funkcija
+   return new Promise((resolve, reject) => { // promises (failas uploadinamas iki tol, kol jis yra uploadintas arba atsiranda kažkoks erroras)
      const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
-     sessionId = new Date().getTime()
+     sessionId = new Date().getTime() // gaunamas laikas
      let uploadBlob = null
-     const imageRef = stor.ref('images/' +sessionId)
+     const imageRef = stor.ref('images/' +sessionId) // imageRef yra vieta saugykloje
 
      fs.readFile(uploadUri, 'base64')
        .then((data) => {
-         return Blob.build(data, { type : `${'image/jpg'};BASE64` })
+         return Blob.build(data, { type : `${'image/jpg'};BASE64` }) //buildinamas blob'as jpg tipo
        })
        .then((blob) => {
          uploadBlob = blob
-         return imageRef.put(uploadBlob,  { type: 'image/jpg' })
+         return imageRef.put(uploadBlob,  { type: 'image/jpg' }) // uploadinamas blob'as
        })
        .then(() => {
          uploadBlob.close()
-         return imageRef.getDownloadURL()
+         return imageRef.getDownloadURL() //gaunamas url
        })
        .then((url) => {
-         resolve(url)
+         resolve(url) //promise išsprendžiama su gautu error
        })
        .catch((error) => {
-         reject(error)
+         reject(error) // jeigu yra erroras
      })
    })
  }
@@ -78,16 +78,16 @@ constructor(props) {
       uploadURL: '',
       checking: true,
     };
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.Recursion = this.Recursion.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this); // submit funkcijos bindinimas
+    this.Recursion = this.Recursion.bind(this); // rekursijos funkcijos bindinimas
   }
-  state = { currentUser: null }
+  state = { currentUser: null } // dabartinis vartotojas
 
 
    componentDidMount() {
-    const { currentUser } = firebase.auth()
+    const { currentUser } = firebase.auth() // gaunamas dabartinis naudotojas iš firebase
                           this.setState({ currentUser })
-                AsyncStorage.getItem('UID').then((value) => {
+                AsyncStorage.getItem('UID').then((value) => { // gaunamas unikalus vartotojo id (jis yra saugomas pačio vartotojo įrenginyje)
                                         UIDK = value
                                        this.setState({
                                         UID: value,
@@ -102,21 +102,21 @@ constructor(props) {
 
                                });
 
-                               db.ref('/users/'+UIDK).once('value', snapshot => {
+                               db.ref('/users/'+UIDK).once('value', snapshot => { //gaunamas telefono numeris, kuris bus įrašomas kartu su skelbimu
                                                                            data = snapshot.val();
                                                                              this.setState({
                                                                                  Phone: data.phone,
                                                                              })
                                                                              })
 
-                            numberOfAds = 0
-                     var dbref = db.ref('Adverts/').orderByChild("UserId").equalTo(UIDK);
+                            numberOfAds = 0 // nustatomi vartotojo turimi skelbimai (skaičius)
+                     var dbref = db.ref('Adverts/').orderByChild("UserId").equalTo(UIDK); // skaičiuojama kiek paskyra turi skelbimų
                                           this.setState ( {dbulref: dbref});
                                              dbref.once('value', (e) => {
                                                  e.forEach((child) => {
-                                                 numberOfAds +=1
-                                                 if(numberOfAds >= 7){
-                                                  Alert.alert(
+                                                 numberOfAds +=1 // forEach skaičiuoja skelbimų sk ir pliusuoja +1
+                                                 if(numberOfAds >= 7){ // jeigu skelbimų skaičius daugiau arba lygu nei 7
+                                                  Alert.alert( // alertas, kad yra viršytas limitas
                                                                        'You have exceeded your maximum number of listing',
                                                                'Please remove some of the listings before proceeding',
                                                                        [
@@ -138,10 +138,10 @@ constructor(props) {
 setTimePassed() {
    this.setState({timePassed: true});
 }
-  handleSubmit() {
-   let time = 10
+  handleSubmit() { //funkcija siunčianti duomenis
+   let time = 10 // 10 bandymų
     this.setState({ uploadURL: ''})
-    if(this.state.Title == '' || this.state.DescriptionStyle == '' || this.state.City == '' || this.state.uri == ''){
+    if(this.state.Title == '' || this.state.DescriptionStyle == '' || this.state.City == '' || this.state.uri == ''){ // jeigu yra tuščių langų išmetamas perspėjimas
         Alert.alert(
         'Warning',
          'Please enter all fields to continue',
@@ -151,40 +151,40 @@ setTimePassed() {
 
         );
     }
-    else {
+    else { // jeigu visi langai atitinka reikalavimus
             this.setState({
-                       animating: true })
+                       animating: true }) // pradedama animacija
 
-                       uploadImage(UriResponse)
+                       uploadImage(UriResponse) // uploadinama nuotrauka
                                           .then(url =>{
                                            let imgURL = url
                                             this.setState({
                                             uploadURL: imgURL,
                                           })
                                           })
-        this.Recursion(time, 3000, this.state.uploadURL);
+        this.Recursion(time, 3000, this.state.uploadURL); // iškviečiamaa rekursijos funkcija
     }
     }
-     Recursion(time, ms, upload){
-          if(upload === '' || upload === undefined){
+     Recursion(time, ms, upload){ // gaunamas time = bandymų kiekis, ms = kiek sekundžių trunka kiekvienas bandymas ir upload = upload url stadija (ar uploadinta ar ne)
+          if(upload === '' || upload === undefined){ //jeigu dar nėra nuotrauka uploadinta į saugyklą
                         setTimeout(()=>{
-                            this.Recursion(time-1, 3000, this.state.uploadURL);
+                            this.Recursion(time-1, 3000, this.state.uploadURL); // iškviečiama ta pati funkcija tik dabar 1 mažiau bandymu
                         }, ms)
 
                     }
                     else {
-                 addAdvertItems(this.state.Title, this.state.Description, this.state.City, this.state.UID, this.state.uploadURL, this.state.Phone, sessionId)
+                 addAdvertItems(this.state.Title, this.state.Description, this.state.City, this.state.UID, this.state.uploadURL, this.state.Phone, sessionId) // nuotrauka uploadinta tai galima siųsti duomenis į duomenų bazę
                       this.setState({
-                        animating: false,
+                        animating: false, // animacija išjungiama
                           })
-                            Alert.alert(
+                            Alert.alert( // alertas su pasirinkimais
                                      'Success',
                                      'Your advertisement has been successfully placed',
                             [
                                    { text: 'Search screen', onPress: () => this.props.navigation.navigate('Search')},
                                    { text: 'Profile screen', onPress: () => this.props.navigation.navigate('Profile')}
                             ],
-                            { cancelable: false}
+                            { cancelable: false} // alerto neggalima skippinti
                             )
                     }
 
@@ -198,18 +198,18 @@ setTimePassed() {
             }
        handleChange2(item){
        this.setState({
-       itemLength: maxLength-(maxLength-item.length),
+       itemLength: maxLength-(maxLength-item.length), //skaičiuojamas simbolių skaičius description'e
        Description: item,
        });
        }
 
- _pickImage() {
+ _pickImage() { // iššaukia kamerą android telefonuose ( naudojama image-picker biblioteka)
 
       ImagePicker.launchCamera({}, response  => {
       UriResponse = response.uri
       this.setState({
         Uri: response.uri,
-        uri: response.uri
+        uri: response.uri // uri telefone atmintyje
       })
       })
     }
@@ -355,10 +355,10 @@ setTimePassed() {
     );
   }
 }
-
+//miestai
 const Cities = ['Vilnius', 'Kaunas', 'Klaipėda', 'Šiauliai', 'Panevėžys', 'Alytus', 'Marijampolė', 'Mažeikiai', 'Jonava', 'Utena', 'Kėdainiai', 'Telšiai', 'Visaginas', 'Tauragė', 'Ukmergė', 'Plungė', 'Šilutė', 'Kretinga', 'Radviliškis', 'Druskininkai', 'Palanga', 'Rokiškis', 'Biržai', 'Gargždai', 'Kuršėnai', 'Elektrėnai', 'Jurbarkas', 'Garliava', 'Vilkaviškis', 'Molėtai', 'Raseiniai', 'Anykščiai', 'Lentvaris', 'Prienai', 'Joniškis', 'Kupiškis', 'Zarasai', 'Ignalina'];
 
-
+//funkcija siunčianti duomenis į firebase
 const addAdvertItems = (title, description, city, UID, URL, Phone, PicName) => {
             AsyncStorage.removeItem('AdKey')
 

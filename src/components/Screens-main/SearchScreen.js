@@ -32,10 +32,11 @@ import { responsiveHeight, responsiveWidth, responsiveFontSize } from 'react-nat
 
 
 let navigation
-
-const WORow = ({name, city, url, navigation, UID}) => (
+// Skelbimai
+const WORow = ({name, city, url, navigation, UID}) => ( //Skelbimų funkcija (gaunamas skelbimo title, miestas, nuotraukos url, unikalus naudotojo id
         <View style={styles.SearchListing}>
         <View style={{flexDirection: 'row', justifyContent: 'center', flex: 1.5}}>
+        {/* Skelbimo komponentai: nuotrauka, tekstas (Title) ir miestas*/}
          <Image
                   source= {{uri : url}}
                      style={ styles.ListingImageStyle }
@@ -65,9 +66,9 @@ export default class Searching extends Component {
 
 static navigationOptions = {
        drawerLabel: 'Search',
-       header: null,
+       header: null, // išjungiama antraštė
         drawerIcon: () => (
-                    <MaterialIcons name={'search'} size={25} />
+                    <MaterialIcons name={'search'} size={25} /> // drawer navigacijos pasirinkimai: 'search' ikona, naudojama vector-icons biblioteka
                     )
      };
 
@@ -110,20 +111,20 @@ static navigationOptions = {
 
                        var dbref = db.ref('Adverts/');
                                  this.setState ( {dbulref: dbref});
-                                         dbref.on('value', (e) => {
+                                         dbref.on('value', (e) => { // gaunami visi duomenys iš Adverts
 
-                                             var rows = [];
-                                             e.forEach((child) => {
-                                             rows.push({
+                                             var rows = [];  //sukuriamas masyvas
+                                             e.forEach((child) => { //Kiekvienam 'vaikui' iš Adverts/
+                                             rows.push({  // į masyva 'įstumiami' duomenys gauti iš firebase
                                                 title: child.val().Title,
                                                 city: child.val().City,
                                                 url: child.val().imgUrl,
                                                 AdKey: child.val().AdKey,
                                              })
 
-                                             rows = rows.reverse()
+                                             rows = rows.reverse() // apkeičiamos šio masyvo elementų vietos, tam, kad skelbimus rodytų nuo naujausio iki seniausio
                                              });
-                                             var ds = this.state.dataSource.cloneWithRows(rows);
+                                             var ds = this.state.dataSource.cloneWithRows(rows); // naudojama ListView iš react-native, tam, kad sukurtume "grid view"
                                              this.setState({
                                                  dataSource: ds,
                                                  loading: false
@@ -147,18 +148,18 @@ static navigationOptions = {
 
 
        componentDidUnMount() {
-              this.state.dbulref.off('value');
+              this.state.dbulref.off('value'); //išimama ar unmountinama dbulref vertė
           }
-          renderRow (rd) {
+          renderRow (rd) { // renderinima elementų eilė
 
-              return <WORow name={rd.title} city={rd.city} url={rd.url} navigation={() => this.SendData(rd.AdKey)} UID = {rd.AdKey}/>;
+              return <WORow name={rd.title} city={rd.city} url={rd.url} navigation={() => this.SendData(rd.AdKey)} UID = {rd.AdKey}/>; // funkcijai perduodami iš row masyvo gauti duomenys
           }
 
 
 
 
           render() {
-              if ( this.state.loading ) {
+              if ( this.state.loading ) { // jeigu loading būsena yra true, tada yra 'renderinami' šie komponentai:
                   return (
                           <View style={{flex: 1, justifyContent:'center', backgroundColor: '#5F6A74'}}>
                           <ActivityIndicator size="large"/>
@@ -182,6 +183,7 @@ static navigationOptions = {
                                               borderBottomWidth: 6,
                                                     }}
                                                  />
+                             {/*renderinamas listas*/}
                       <ListView dataSource={this.state.dataSource} style={styles.Main}
                   renderRow={(rowData) => this.renderRow(rowData)}
                       />

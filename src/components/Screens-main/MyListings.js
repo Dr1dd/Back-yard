@@ -60,7 +60,8 @@ const WORow = ({name, city, url, navigation, UID}) => (
 );
 
 let UIDK
-export default class MyListings extends Component {
+// Mano skelbimai
+export default class MyListings extends Component { // Ši klasė yra labai panaši kaip ir SearchScreen.js failiuke esanti Searching klasė.
 
 
 static navigationOptions = {
@@ -71,7 +72,7 @@ static navigationOptions = {
                     )
      };
 
-      constructor(props) {
+      constructor(props) { // tas pats kaip ir Searching klasė (SearchScreen.js)
              super(props);
              this.state = {
                  dataSource: new ListView.DataSource({
@@ -107,25 +108,25 @@ static navigationOptions = {
 
                      });
                                 numberOfAds = 0
-                                var dbref = db.ref('Adverts/').orderByChild("UserId").equalTo(UIDK);
+                                var dbref = db.ref('Adverts/').orderByChild("UserId").equalTo(UIDK); //pagrindinis skirtumas: Ieškomi visi skelbimai, kurie turie atitinkamą Unikalų skelbimo id
 
                                    this.setState ( {dbulref: dbref});
                                            dbref.on('value', (e) => {
-                                               var rows = [];
-                                               e.forEach((child) => {
-                                               numberOfAds +=1
-                                               rows.push({
-                                                  title: child.val().Title,
-                                                  city: child.val().City,
-                                                  url: child.val().imgUrl,
-                                                  AdKey: child.val().AdKey,
+                                               var rows = [];// SearchScreen.js tas pats
+                                               e.forEach((child) => {// SearchScreen.js tas pats
+                                               numberOfAds +=1// SearchScreen.js tas pats
+                                               rows.push({// SearchScreen.js tas pats
+                                                  title: child.val().Title,// SearchScreen.js tas pats
+                                                  city: child.val().City,// SearchScreen.js tas pats
+                                                  url: child.val().imgUrl,// SearchScreen.js tas pats
+                                                  AdKey: child.val().AdKey, // SearchScreen.js tas pats
                                                })
 
                                                rows = rows.reverse()
                                                });
-                                               var ds = this.state.dataSource.cloneWithRows(rows);
+                                               var ds = this.state.dataSource.cloneWithRows(rows);// SearchScreen.js tas pats
                                                this.setState({
-                                                   dataSource: ds,
+                                                   dataSource: ds,// SearchScreen.js tas pats
                                                    loading: false
                                                });
                                            });
@@ -137,12 +138,12 @@ static navigationOptions = {
       }
       SendData = (AdKey) =>{
       let key = AdKey
-      return(
+      return(// SearchScreen.js tas pats
         this.props.navigation.navigate('MyAds'),
         this.DataSend(key)
       )
-      }
-     DataSend(AdKey){
+      }// SearchScreen.js tas pats
+     DataSend(AdKey){// SearchScreen.js tas pats
         AsyncStorage.setItem('AdKey', AdKey)
      }
 onBack = () => {
@@ -151,11 +152,11 @@ onBack = () => {
 
      };
 
-       componentDidUnMount() {
+       componentDidUnMount() { // SearchScreen.js tas pats
               this.state.dbulref.off('value');
           }
           renderRow (rd) {
-              return <WORow name={rd.title} city={rd.city} url={rd.url} navigation={() => this.SendData(rd.AdKey)} UID = {rd.AdKey}/>;
+              return <WORow name={rd.title} city={rd.city} url={rd.url} navigation={() => this.SendData(rd.AdKey)} UID = {rd.AdKey}/>;// SearchScreen.js tas pats
           }
 
 

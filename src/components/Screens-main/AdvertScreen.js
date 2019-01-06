@@ -16,6 +16,7 @@ import { responsiveHeight, responsiveWidth, responsiveFontSize } from 'react-nat
 let adUIDK
 
 let UIDK
+// Skelbimo langas
 export default class AdvertScreen extends React.Component {
 static navigationOptions = {
       header: null,
@@ -43,13 +44,13 @@ constructor(props) {
    componentDidMount() {
     const { currentUser } = firebase.auth()
                           this.setState({ currentUser })
-                          AsyncStorage.getItem('AdKey').then((value) => {
+                          AsyncStorage.getItem('AdKey').then((value) => { // gaunamas Skelbimo unikalus raktas
                                                          adUIDK = value
                                                         this.setState({
                                                          ADUIDK: value,
                                                             });
                                                      });
-             AsyncStorage.getItem('UID').then((value) => {
+             AsyncStorage.getItem('UID').then((value) => { // gaunamas vartotojo unikalus id
                                       UIDK = value
                                      this.setState({
                                       UID: value,
@@ -63,7 +64,7 @@ constructor(props) {
                                  loaded: true
 
                                });
-         db.ref('/Adverts/'+adUIDK).once('value', snapshot => {
+         db.ref('/Adverts/'+adUIDK).once('value', snapshot => { // gaunami duomenys naudojantis skelbimo raktu
                                   data = snapshot.val();
                                     this.setState({
                                         City: data.City,
@@ -88,7 +89,7 @@ constructor(props) {
 
 
   render() {
-                if ( this.state.loading ) {
+                if ( this.state.loading ) { // jeigu loading būsena yra true, tada yra 'renderinami' šie komponentai:
                     return (
                             <View style={{flex: 1, justifyContent:'center', backgroundColor: '#5F6A74'}}>
                             <ActivityIndicator size="large"/>
@@ -131,6 +132,7 @@ constructor(props) {
                </View>
 
            <View style={styles.AdvertImageBlock}>
+           {/*Laukiama kol bus gauta url būsena*/}
   {
                            (() => {
                               switch (this.state.URL) {
@@ -204,6 +206,7 @@ constructor(props) {
                          }}>
                          Phone number:
                          </Text>
+                         {/* naudojantis switch tikrinama Phone būsena*/}
                           {
                                               (() => {
                                                 switch (this.state.Phone) {
