@@ -36,7 +36,7 @@
     "redux-thunk": "^2.3.0",
     "rn-fetch-blob": "^0.10.13",
     "tcomb-form-native": "^0.6.20",
-    "validator": "^10.8.0"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "babel-jest": "23.6.0",
